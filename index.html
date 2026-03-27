@@ -1,65 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Comodatos - Distribuidora</title>
+    <style>
+        :root {
+            --color-background-primary: #ffffff;
+            --color-background-secondary: #f8f9fa;
+            --color-background-tertiary: #f1f3f5;
+            --color-text-primary: #212529;
+            --color-text-secondary: #495057;
+            --color-text-tertiary: #868e96;
+            --color-border-secondary: #dee2e6;
+            --color-border-tertiary: #e9ecef;
+            --font-sans: 'Inter', -apple-system, sans-serif;
+            --border-radius-md: 6px;
+            --border-radius-lg: 8px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font-sans); font-size: 14px; color: var(--color-text-primary); background: var(--color-background-tertiary); }
+        
+        .app { display: flex; height: 100vh; overflow: hidden; }
+        
+        /* Sidebar */
+        .sidebar { width: 220px; min-width: 220px; background: var(--color-background-secondary); border-right: 1px solid var(--color-border-tertiary); padding: 16px 0; display: flex; flex-direction: column; gap: 4px; }
+        .sidebar-logo { padding: 0 16px 16px; border-bottom: 1px solid var(--color-border-tertiary); margin-bottom: 8px; }
+        .sidebar-logo span { font-size: 16px; font-weight: 600; color: #185FA5; }
+        .sidebar-logo small { display: block; font-size: 11px; color: var(--color-text-tertiary); }
+        
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 16px; font-size: 13px; cursor: pointer; color: var(--color-text-secondary); border-left: 3px solid transparent; transition: 0.2s; }
+        .nav-item:hover { background: #e9ecef; }
+        .nav-item.active { background: #fff; color: #185FA5; border-left-color: #185FA5; font-weight: 600; }
+
+        /* Main Content */
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .topbar { background: #fff; border-bottom: 1px solid var(--color-border-tertiary); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; }
+        .topbar-title { font-size: 16px; font-weight: 600; }
+        .topbar-actions { display: flex; gap: 10px; }
+
+        .content { flex: 1; overflow-y: auto; padding: 24px; }
+        
+        /* Dashboard Metrics */
+        .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .metric { background: #fff; border-radius: var(--border-radius-md); padding: 16px; border: 1px solid var(--color-border-tertiary); }
+        .metric-label { font-size: 12px; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; }
+        .metric-value { font-size: 28px; font-weight: 700; margin: 4px 0; }
+
+        /* Tables & Sections */
+        .section { background: #fff; border-radius: var(--border-radius-lg); border: 1px solid var(--color-border-tertiary); margin-bottom: 20px; overflow: hidden; }
+        .section-header { padding: 16px 20px; border-bottom: 1px solid var(--color-border-tertiary); display: flex; justify-content: space-between; align-items: center; }
+        .section-title { font-size: 14px; font-weight: 600; }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px 20px; font-size: 11px; color: var(--color-text-tertiary); border-bottom: 1px solid var(--color-border-tertiary); background: #fafbfc; }
+        td { padding: 12px 20px; border-bottom: 1px solid var(--color-border-tertiary); font-size: 13px; }
+        
+        /* Badges & UI */
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+        .badge-disponible { background: #d4edda; color: #155724; }
+        .badge-entregado { background: #cce5ff; color: #004085; }
+        .badge-servicio { background: #fff3cd; color: #856404; }
+        
+        .btn { padding: 8px 16px; font-size: 13px; border-radius: 6px; border: 1px solid #dee2e6; cursor: pointer; transition: 0.2s; background: #fff; }
+        .btn-primary { background: #185FA5; color: #fff; border-color: #185FA5; }
+        .btn-primary:hover { background: #144d86; }
+
+        /* Modals */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
+        .modal-overlay.open { display: flex; }
+        .modal { background: #fff; width: 500px; border-radius: 8px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .modal-header { padding: 16px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
+        .modal-body { padding: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; font-size: 12px; margin-bottom: 5px; font-weight: 600; }
+        .form-input, .form-select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+
+        .page { display: none; }
+        .page.active { display: block; }
+    </style>
+</head>
+<body>
+
+<div class="app">
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <span>Control Comodatos</span>
+            <small>Logística Luis Guillón</small>
+        </div>
+        <div class="nav-item active" onclick="showPage('dashboard', this)">Dashboard</div>
+        <div class="nav-item" onclick="showPage('activos', this)">Activos</div>
+        <div class="nav-item" onclick="showPage('movimientos', this)">Historial</div>
+    </div>
+
+    <div class="main">
+        <div class="topbar">
+            <span class="topbar-title" id="page-title">Dashboard</span>
+            <div class="topbar-actions">
+                <button class="btn" onclick="openModal('modal-activo')">+ Nuevo Activo</button>
+                <button class="btn btn-primary" onclick="openModal('modal-movimiento')">Registrar Movimiento</button>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="page active" id="page-dashboard">
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-label">Total Heladeras</div>
+                        <div class="metric-value" id="m-total">0</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">En Clientes</div>
+                        <div class="metric-value" id="m-entregados" style="color:#185FA5">0</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Disponibles</div>
+                        <div class="metric-value" id="m-disponibles" style="color:#28a745">0</div>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-header"><span class="section-title">Últimos Movimientos</span></div>
+                    <table id="table-recent-movs">
+                        <thead><tr><th>Tipo</th><th>Activo</th><th>Cliente</th><th>Fecha</th></tr></thead>
+                        <tbody id="dash-mov-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="page" id="page-activos">
+                <div class="section">
+                    <table>
+                        <thead><tr><th>QR / ID</th><th>Modelo</th><th>Estado</th><th>Cliente</th></tr></thead>
+                        <tbody id="activos-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="page" id="page-movimientos">
+                <div class="section">
+                    <table id="all-movs-table">
+                        <thead><tr><th>Fecha</th><th>Tipo</th><th>Activo</th><th>Cliente</th><th>Chofer</th></tr></thead>
+                        <tbody id="all-mov-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modal-activo">
+    <div class="modal">
+        <div class="modal-header"><strong>Registrar Activo</strong><button class="btn" onclick="closeModal('modal-activo')">✕</button></div>
+        <div class="modal-body">
+            <div class="form-group"><label class="form-label">Código QR / ID</label><input id="f-qr" class="form-input" placeholder="HEL-001"></div>
+            <div class="form-group"><label class="form-label">Modelo</label><input id="f-modelo" class="form-input"></div>
+            <div class="form-group"><label class="form-label">Capacidad</label><input id="f-capacidad" type="number" class="form-input"></div>
+            <button class="btn btn-primary" style="width:100%" onclick="saveActivo()">Guardar en Sheets</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modal-movimiento">
+    <div class="modal">
+        <div class="modal-header"><strong>Registrar Movimiento</strong><button class="btn" onclick="closeModal('modal-movimiento')">✕</button></div>
+        <div class="modal-body">
+            <div class="form-group"><label class="form-label">Tipo</label>
+                <select id="f-tipo" class="form-select">
+                    <option value="Entrega">Entrega</option>
+                    <option value="Retiro">Retiro</option>
+                </select>
+            </div>
+            <div class="form-group"><label class="form-label">ID Activo</label><input id="f-activo-id" class="form-input"></div>
+            <div class="form-group"><label class="form-label">Cliente</label><input id="f-cliente-id" class="form-input"></div>
+            <div class="form-group"><label class="form-label">Chofer</label><input id="f-chofer" class="form-input"></div>
+            <button class="btn btn-primary" style="width:100%" onclick="saveMovimiento()">Registrar en Sheets</button>
+        </div>
+    </div>
+</div>
+
 <script>
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwYYiFak55C-TGCnUtxF3NXztqsN28B5cmpOS0HN4g4bVPwqjsKkq2Hyxt-EFUAENmV/exec" // <--- PEGA TU URL DE APPS SCRIPT AQUÍ
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwYYiFak55C-TGCnUtxF3NXztqsN28B5cmpOS0HN4g4bVPwqjsKkq2Hyxt-EFUAENmV/exec";
+    
+    let activos = [];
+    let movimientos = [];
 
-let activos = [];
-let movimientos = [];
-
-// FUNCION CRITICA: Carga los datos reales
-async function fetchData() {
-    try {
-        const response = await fetch(WEB_APP_URL, {
-            method: "GET",
-            mode: "cors", 
-            redirect: "follow" 
-        });
-        const data = await response.json();
-        activos = data.activos || [];
-        movimientos = data.movimientos || [];
-        renderAll();
-        console.log("¡Conexión exitosa final!");
-    } catch (e) {
-        console.error("Error:", e);
+    // CARGA DE DATOS
+    async function fetchData() {
+        try {
+            console.log("Cargando datos...");
+            const response = await fetch(WEB_APP_URL, { redirect: "follow" });
+            const data = await response.json();
+            
+            activos = data.activos || [];
+            movimientos = data.movimientos || [];
+            
+            renderAll();
+            console.log("Datos sincronizados!");
+        } catch (e) {
+            console.error("Error cargando datos:", e);
+        }
     }
-}
-// FUNCION CRITICA: Guarda datos en Sheets
-async function saveToSheets(payload) {
-    await fetch(WEB_APP_URL, {
-        method: 'POST',
-        mode: 'no-cors', // Necesario para Apps Script
-        body: JSON.stringify(payload)
-    });
-    setTimeout(fetchData, 1500); // Recarga datos después de guardar
-}
 
-// Modificación de tus funciones existentes para que guarden de verdad:
-function saveActivo() {
-    const payload = {
-        metodo: "nuevoActivo",
-        qr: document.getElementById('f-qr').value,
-        modelo: document.getElementById('f-modelo').value,
-        capacidad: document.getElementById('f-capacidad').value,
-        obs: document.getElementById('f-obs').value
-    };
-    saveToSheets(payload);
-    closeModal('modal-activo');
-}
+    // GUARDADO
+    async function saveToSheets(payload) {
+        try {
+            await fetch(WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(payload)
+            });
+            alert("Enviado correctamente. Recargando...");
+            setTimeout(fetchData, 2000);
+        } catch (e) {
+            alert("Error al guardar.");
+        }
+    }
 
-function saveMovimiento() {
-    const payload = {
-        metodo: "nuevoMovimiento",
-        tipo: document.getElementById('f-tipo').value,
-        activo: document.getElementById('f-activo-id').value,
-        cliente: document.getElementById('f-cliente-id').value,
-        chofer: document.getElementById('f-chofer').value,
-        fecha: document.getElementById('f-fecha').value,
-        failcode: document.getElementById('f-failcode').value
-    };
-    saveToSheets(payload);
-    closeModal('modal-entrega');
-}
+    function renderAll() {
+        // Dash Metrics
+        document.getElementById('m-total').textContent = activos.length;
+        document.getElementById('m-entregados').textContent = activos.filter(a => a.Estado === 'Entregado').length;
+        document.getElementById('m-disponibles').textContent = activos.filter(a => a.Estado === 'Disponible').length;
 
-// Iniciar la app cargando datos reales
-window.onload = fetchData;
+        // Activos Table
+        const actBody = document.getElementById('activos-body');
+        actBody.innerHTML = activos.map(a => `
+            <tr>
+                <td><strong>${a.QR || a.qr}</strong></td>
+                <td>${a.Modelo || a.modelo}</td>
+                <td><span class="badge badge-${(a.Estado || a.estado || '').toLowerCase()}">${a.Estado || a.estado}</span></td>
+                <td>${a.Cliente || a.cliente || '—'}</td>
+            </tr>
+        `).join('');
 
-// ... (El resto de tus funciones de renderizado: renderDashboard, renderActivos, etc.)
+        // Movimientos Dashboard
+        const dashMovBody = document.getElementById('dash-mov-body');
+        const ultimos = [...movimientos].reverse().slice(0, 5);
+        dashMovBody.innerHTML = ultimos.map(m => `
+            <tr>
+                <td>${m.Tipo || m.tipo}</td>
+                <td>${m.Activo || m.activo}</td>
+                <td>${m.Cliente || m.cliente}</td>
+                <td>${m.Fecha || m.fecha}</td>
+            </tr>
+        `).join('');
+    }
+
+    function saveActivo() {
+        const payload = {
+            metodo: "nuevoActivo",
+            qr: document.getElementById('f-qr').value,
+            modelo: document.getElementById('f-modelo').value,
+            capacidad: document.getElementById('f-capacidad').value,
+            obs: "Nuevo desde Web"
+        };
+        saveToSheets(payload);
+        closeModal('modal-activo');
+    }
+
+    function saveMovimiento() {
+        const payload = {
+            metodo: "nuevoMovimiento",
+            tipo: document.getElementById('f-tipo').value,
+            activo: document.getElementById('f-activo-id').value,
+            cliente: document.getElementById('f-cliente-id').value,
+            chofer: document.getElementById('f-chofer').value,
+            fecha: new Date().toLocaleDateString()
+        };
+        saveToSheets(payload);
+        closeModal('modal-movimiento');
+    }
+
+    function showPage(id, navEl) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById('page-' + id).classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        navEl.classList.add('active');
+        document.getElementById('page-title').textContent = id.charAt(0).toUpperCase() + id.slice(1);
+    }
+
+    function openModal(id) { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    window.onload = fetchData;
 </script>
+
+</body>
+</html>
