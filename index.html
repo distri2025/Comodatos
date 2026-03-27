@@ -7,25 +7,20 @@ let movimientos = [];
 // FUNCION CRITICA: Carga los datos reales
 async function fetchData() {
     try {
-        // Configuramos el fetch para seguir la redirección de Google
         const response = await fetch(WEB_APP_URL, {
             method: "GET",
             mode: "cors", 
-            redirect: "follow" // <--- ESTO ES VITAL PARA EL ERROR 302
+            redirect: "follow" 
         });
-
-        if (!response.ok) throw new Error("Error en la red");
-
         const data = await response.json();
         activos = data.activos || [];
         movimientos = data.movimientos || [];
-        
-        console.log("¡Conexión exitosa desde GitHub!");
         renderAll();
+        console.log("¡Conexión exitosa final!");
     } catch (e) {
-        console.error("Error detallado:", e);
+        console.error("Error:", e);
     }
-}    
+}
 // FUNCION CRITICA: Guarda datos en Sheets
 async function saveToSheets(payload) {
     await fetch(WEB_APP_URL, {
