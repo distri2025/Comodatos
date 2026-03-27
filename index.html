@@ -6,91 +6,76 @@
     <title>Gestión de Comodatos - Distribuidora</title>
     <style>
         :root {
-            --color-background-primary: #ffffff;
-            --color-background-secondary: #f8f9fa;
+            --color-primary: #185FA5;
+            --color-success: #28a745;
+            --color-danger: #dc3545;
             --color-background-tertiary: #f1f3f5;
-            --color-text-primary: #212529;
             --color-text-secondary: #495057;
-            --color-text-tertiary: #868e96;
-            --color-border-secondary: #dee2e6;
             --color-border-tertiary: #e9ecef;
             --font-sans: 'Inter', -apple-system, sans-serif;
-            --border-radius-md: 6px;
-            --border-radius-lg: 8px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: var(--font-sans); font-size: 14px; color: var(--color-text-primary); background: var(--color-background-tertiary); }
+        body { font-family: var(--font-sans); font-size: 14px; color: #212529; background: var(--color-background-tertiary); }
         
         .app { display: flex; height: 100vh; overflow: hidden; }
         
         /* Sidebar */
-        .sidebar { width: 220px; min-width: 220px; background: var(--color-background-secondary); border-right: 1px solid var(--color-border-tertiary); padding: 16px 0; display: flex; flex-direction: column; gap: 4px; }
+        .sidebar { width: 220px; min-width: 220px; background: #f8f9fa; border-right: 1px solid var(--color-border-tertiary); padding: 16px 0; display: flex; flex-direction: column; gap: 4px; }
         .sidebar-logo { padding: 0 16px 16px; border-bottom: 1px solid var(--color-border-tertiary); margin-bottom: 8px; }
-        .sidebar-logo span { font-size: 16px; font-weight: 600; color: #185FA5; }
-        .sidebar-logo small { display: block; font-size: 11px; color: var(--color-text-tertiary); }
+        .sidebar-logo span { font-size: 16px; font-weight: 600; color: var(--color-primary); }
         
         .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 16px; font-size: 13px; cursor: pointer; color: var(--color-text-secondary); border-left: 3px solid transparent; transition: 0.2s; }
         .nav-item:hover { background: #e9ecef; }
-        .nav-item.active { background: #fff; color: #185FA5; border-left-color: #185FA5; font-weight: 600; }
+        .nav-item.active { background: #fff; color: var(--color-primary); border-left-color: var(--color-primary); font-weight: 600; }
 
         /* Main Content */
         .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .topbar { background: #fff; border-bottom: 1px solid var(--color-border-tertiary); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; }
         .topbar-title { font-size: 16px; font-weight: 600; }
-        .topbar-actions { display: flex; gap: 10px; }
 
         .content { flex: 1; overflow-y: auto; padding: 24px; }
         
-        /* Dashboard Metrics */
+        /* Metrics */
         .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .metric { background: #fff; border-radius: var(--border-radius-md); padding: 16px; border: 1px solid var(--color-border-tertiary); }
-        .metric-label { font-size: 12px; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; }
-        .metric-value { font-size: 28px; font-weight: 700; margin: 4px 0; }
+        .metric { background: #fff; border-radius: 8px; padding: 16px; border: 1px solid var(--color-border-tertiary); }
+        .metric-label { font-size: 11px; color: #868e96; text-transform: uppercase; }
+        .metric-value { font-size: 24px; font-weight: 700; margin-top: 4px; }
 
-        /* Tables & Sections */
-        .section { background: #fff; border-radius: var(--border-radius-lg); border: 1px solid var(--color-border-tertiary); margin-bottom: 20px; overflow: hidden; }
-        .section-header { padding: 16px 20px; border-bottom: 1px solid var(--color-border-tertiary); display: flex; justify-content: space-between; align-items: center; }
-        .section-title { font-size: 14px; font-weight: 600; }
+        /* Tables */
+        .section { background: #fff; border-radius: 8px; border: 1px solid var(--color-border-tertiary); margin-bottom: 20px; overflow: hidden; }
+        .section-header { padding: 12px 20px; border-bottom: 1px solid var(--color-border-tertiary); background: #fafbfc; font-weight: 600; font-size: 13px; }
         
         table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 12px 20px; font-size: 11px; color: var(--color-text-tertiary); border-bottom: 1px solid var(--color-border-tertiary); background: #fafbfc; }
+        th { text-align: left; padding: 12px 20px; font-size: 11px; color: #868e96; border-bottom: 1px solid var(--color-border-tertiary); background: #fafbfc; }
         td { padding: 12px 20px; border-bottom: 1px solid var(--color-border-tertiary); font-size: 13px; }
         
-        /* Badges & UI */
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
         .badge-disponible { background: #d4edda; color: #155724; }
         .badge-entregado { background: #cce5ff; color: #004085; }
-        .badge-servicio { background: #fff3cd; color: #856404; }
-        
-        .btn { padding: 8px 16px; font-size: 13px; border-radius: 6px; border: 1px solid #dee2e6; cursor: pointer; transition: 0.2s; background: #fff; }
-        .btn-primary { background: #185FA5; color: #fff; border-color: #185FA5; }
-        .btn-primary:hover { background: #144d86; }
+        .badge-alerta { background: #f8d7da; color: #721c24; }
 
-        /* Modals */
+        .btn { padding: 8px 16px; font-size: 13px; border-radius: 6px; border: 1px solid #dee2e6; cursor: pointer; background: #fff; }
+        .btn-primary { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
+
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
         .modal-overlay.open { display: flex; }
-        .modal { background: #fff; width: 500px; border-radius: 8px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .modal-header { padding: 16px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
-        .modal-body { padding: 20px; }
-        .form-group { margin-bottom: 15px; }
-        .form-label { display: block; font-size: 12px; margin-bottom: 5px; font-weight: 600; }
-        .form-input, .form-select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-
+        .modal { background: #fff; width: 450px; border-radius: 8px; padding: 20px; }
+        
         .page { display: none; }
         .page.active { display: block; }
+
+        input, select { width: 100%; padding: 8px; margin: 8px 0 16px; border: 1px solid #ccc; border-radius: 4px; }
     </style>
 </head>
 <body>
 
 <div class="app">
     <div class="sidebar">
-        <div class="sidebar-logo">
-            <span>Control Comodatos</span>
-            <small>Logística Luis Guillón</small>
-        </div>
+        <div class="sidebar-logo"><span>Control Comodatos</span><small>Luis Guillón</small></div>
         <div class="nav-item active" onclick="showPage('dashboard', this)">Dashboard</div>
         <div class="nav-item" onclick="showPage('activos', this)">Activos</div>
+        <div class="nav-item" onclick="showPage('clientes', this)">Clientes (Score)</div>
         <div class="nav-item" onclick="showPage('movimientos', this)">Historial</div>
     </div>
 
@@ -98,7 +83,6 @@
         <div class="topbar">
             <span class="topbar-title" id="page-title">Dashboard</span>
             <div class="topbar-actions">
-                <button class="btn" onclick="openModal('modal-activo')">+ Nuevo Activo</button>
                 <button class="btn btn-primary" onclick="openModal('modal-movimiento')">Registrar Movimiento</button>
             </div>
         </div>
@@ -106,22 +90,13 @@
         <div class="content">
             <div class="page active" id="page-dashboard">
                 <div class="metrics">
-                    <div class="metric">
-                        <div class="metric-label">Total Heladeras</div>
-                        <div class="metric-value" id="m-total">0</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-label">En Clientes</div>
-                        <div class="metric-value" id="m-entregados" style="color:#185FA5">0</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-label">Disponibles</div>
-                        <div class="metric-value" id="m-disponibles" style="color:#28a745">0</div>
-                    </div>
+                    <div class="metric"><div class="metric-label">Total</div><div class="metric-value" id="m-total">0</div></div>
+                    <div class="metric"><div class="metric-label">En Clientes</div><div class="metric-value" id="m-entregados">0</div></div>
+                    <div class="metric"><div class="metric-label">Disponibles</div><div class="metric-value" id="m-disponibles">0</div></div>
                 </div>
                 <div class="section">
-                    <div class="section-header"><span class="section-title">Últimos Movimientos</span></div>
-                    <table id="table-recent-movs">
+                    <div class="section-header">Últimos Movimientos</div>
+                    <table>
                         <thead><tr><th>Tipo</th><th>Activo</th><th>Cliente</th><th>Fecha</th></tr></thead>
                         <tbody id="dash-mov-body"></tbody>
                     </table>
@@ -137,9 +112,18 @@
                 </div>
             </div>
 
+            <div class="page" id="page-clientes">
+                <div class="section">
+                    <table>
+                        <thead><tr><th>Cliente</th><th>Equipos</th><th>Compras/Mes</th><th>Rendimiento</th><th>Estado</th></tr></thead>
+                        <tbody id="clientes-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
             <div class="page" id="page-movimientos">
                 <div class="section">
-                    <table id="all-movs-table">
+                    <table>
                         <thead><tr><th>Fecha</th><th>Tipo</th><th>Activo</th><th>Cliente</th><th>Chofer</th></tr></thead>
                         <tbody id="all-mov-body"></tbody>
                     </table>
@@ -149,117 +133,86 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="modal-activo">
-    <div class="modal">
-        <div class="modal-header"><strong>Registrar Activo</strong><button class="btn" onclick="closeModal('modal-activo')">✕</button></div>
-        <div class="modal-body">
-            <div class="form-group"><label class="form-label">Código QR / ID</label><input id="f-qr" class="form-input" placeholder="HEL-001"></div>
-            <div class="form-group"><label class="form-label">Modelo</label><input id="f-modelo" class="form-input"></div>
-            <div class="form-group"><label class="form-label">Capacidad</label><input id="f-capacidad" type="number" class="form-input"></div>
-            <button class="btn btn-primary" style="width:100%" onclick="saveActivo()">Guardar en Sheets</button>
-        </div>
-    </div>
-</div>
-
 <div class="modal-overlay" id="modal-movimiento">
     <div class="modal">
-        <div class="modal-header"><strong>Registrar Movimiento</strong><button class="btn" onclick="closeModal('modal-movimiento')">✕</button></div>
-        <div class="modal-body">
-            <div class="form-group"><label class="form-label">Tipo</label>
-                <select id="f-tipo" class="form-select">
-                    <option value="Entrega">Entrega</option>
-                    <option value="Retiro">Retiro</option>
-                </select>
-            </div>
-            <div class="form-group"><label class="form-label">ID Activo</label><input id="f-activo-id" class="form-input"></div>
-            <div class="form-group"><label class="form-label">Cliente</label><input id="f-cliente-id" class="form-input"></div>
-            <div class="form-group"><label class="form-label">Chofer</label><input id="f-chofer" class="form-input"></div>
-            <button class="btn btn-primary" style="width:100%" onclick="saveMovimiento()">Registrar en Sheets</button>
-        </div>
+        <h3>Registrar Movimiento</h3>
+        <label>Tipo</label>
+        <select id="f-tipo"><option>Entrega</option><option>Retiro</option></select>
+        <label>ID Activo</label><input id="f-activo-id" placeholder="HEL-001">
+        <label>Cliente</label><input id="f-cliente-id">
+        <label>Chofer</label><input id="f-chofer">
+        <button class="btn btn-primary" style="width:100%" onclick="saveMovimiento()">Guardar en Sheets</button>
+        <button class="btn" style="width:100%; margin-top:8px" onclick="closeModal('modal-movimiento')">Cancelar</button>
     </div>
 </div>
 
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwYYiFak55C-TGCnUtxF3NXztqsN28B5cmpOS0HN4g4bVPwqjsKkq2Hyxt-EFUAENmV/exec";
-    
     let activos = [];
     let movimientos = [];
 
-    // CARGA DE DATOS
     async function fetchData() {
         try {
-            console.log("Cargando datos...");
-            const response = await fetch(WEB_APP_URL, { redirect: "follow" });
+            const response = await fetch(WEB_APP_URL);
             const data = await response.json();
-            
             activos = data.activos || [];
             movimientos = data.movimientos || [];
-            
             renderAll();
-            console.log("Datos sincronizados!");
-        } catch (e) {
-            console.error("Error cargando datos:", e);
-        }
-    }
-
-    // GUARDADO
-    async function saveToSheets(payload) {
-        try {
-            await fetch(WEB_APP_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: JSON.stringify(payload)
-            });
-            alert("Enviado correctamente. Recargando...");
-            setTimeout(fetchData, 2000);
-        } catch (e) {
-            alert("Error al guardar.");
-        }
+        } catch (e) { console.error("Error:", e); }
     }
 
     function renderAll() {
-        // Dash Metrics
+        // Métricas
         document.getElementById('m-total').textContent = activos.length;
         document.getElementById('m-entregados').textContent = activos.filter(a => a.Estado === 'Entregado').length;
         document.getElementById('m-disponibles').textContent = activos.filter(a => a.Estado === 'Disponible').length;
 
-        // Activos Table
-        const actBody = document.getElementById('activos-body');
-        actBody.innerHTML = activos.map(a => `
+        // Tabla Activos
+        document.getElementById('activos-body').innerHTML = activos.map(a => `
             <tr>
-                <td><strong>${a.QR || a.qr}</strong></td>
-                <td>${a.Modelo || a.modelo}</td>
-                <td><span class="badge badge-${(a.Estado || a.estado || '').toLowerCase()}">${a.Estado || a.estado}</span></td>
-                <td>${a.Cliente || a.cliente || '—'}</td>
+                <td><strong>${a.QR}</strong></td>
+                <td>${a.Modelo}</td>
+                <td><span class="badge badge-${a.Estado.toLowerCase()}">${a.Estado}</span></td>
+                <td>${a.Cliente || '—'}</td>
             </tr>
         `).join('');
 
-        // Movimientos Dashboard
-        const dashMovBody = document.getElementById('dash-mov-body');
-        const ultimos = [...movimientos].reverse().slice(0, 5);
-        dashMovBody.innerHTML = ultimos.map(m => `
-            <tr>
-                <td>${m.Tipo || m.tipo}</td>
-                <td>${m.Activo || m.activo}</td>
-                <td>${m.Cliente || m.cliente}</td>
-                <td>${m.Fecha || m.fecha}</td>
-            </tr>
+        // Tabla Movimientos (Dashboard y Completa)
+        const movHtml = (arr) => arr.map(m => `
+            <tr><td>${m.Fecha}</td><td>${m.Tipo}</td><td>${m.Activo}</td><td>${m.Cliente}</td><td>${m.Chofer || '-'}</td></tr>
         `).join('');
+        
+        document.getElementById('dash-mov-body').innerHTML = movHtml([...movimientos].reverse().slice(0, 5));
+        document.getElementById('all-mov-body').innerHTML = movHtml([...movimientos].reverse());
+
+        // Tabla Clientes (Score)
+        renderClientes();
     }
 
-    function saveActivo() {
-        const payload = {
-            metodo: "nuevoActivo",
-            qr: document.getElementById('f-qr').value,
-            modelo: document.getElementById('f-modelo').value,
-            capacidad: document.getElementById('f-capacidad').value,
-            obs: "Nuevo desde Web"
-        };
-        saveToSheets(payload);
-        closeModal('modal-activo');
+    function renderClientes() {
+        const cl = {};
+        activos.filter(a => a.Estado === 'Entregado').forEach(a => {
+            if (!cl[a.Cliente]) cl[a.Cliente] = { equipos: 0, compras: 0 };
+            cl[a.Cliente].equipos++;
+            cl[a.Cliente].compras += parseFloat(a.ComprasMes || 0);
+        });
+
+        document.getElementById('clientes-body').innerHTML = Object.entries(cl).map(([name, d]) => {
+            const prom = (d.compras / d.equipos).toFixed(1);
+            const esRentable = prom >= 20;
+            return `
+                <tr>
+                    <td><strong>${name}</strong></td>
+                    <td>${d.equipos}</td>
+                    <td>${d.compras} cajones</td>
+                    <td>${prom} p/equipo</td>
+                    <td><span class="badge ${esRentable?'badge-disponible':'badge-alerta'}">${esRentable?'Rentable':'Bajo Mínimo'}</span></td>
+                </tr>
+            `;
+        }).join('');
     }
 
-    function saveMovimiento() {
+    async function saveMovimiento() {
         const payload = {
             metodo: "nuevoMovimiento",
             tipo: document.getElementById('f-tipo').value,
@@ -268,8 +221,10 @@
             chofer: document.getElementById('f-chofer').value,
             fecha: new Date().toLocaleDateString()
         };
-        saveToSheets(payload);
+        await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+        alert("Sincronizando...");
         closeModal('modal-movimiento');
+        setTimeout(fetchData, 2000);
     }
 
     function showPage(id, navEl) {
@@ -277,7 +232,7 @@
         document.getElementById('page-' + id).classList.add('active');
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         navEl.classList.add('active');
-        document.getElementById('page-title').textContent = id.charAt(0).toUpperCase() + id.slice(1);
+        document.getElementById('page-title').textContent = navEl.textContent;
     }
 
     function openModal(id) { document.getElementById(id).classList.add('open'); }
@@ -285,6 +240,5 @@
 
     window.onload = fetchData;
 </script>
-
 </body>
 </html>
