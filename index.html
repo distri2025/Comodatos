@@ -7,25 +7,22 @@ let movimientos = [];
 // FUNCION CRITICA: Carga los datos reales
 async function fetchData() {
     try {
-        // Agregamos un "no-cache" para que siempre traiga lo último del Sheets
-        const response = await fetch(WEB_APP_URL + "?t=" + Date.now());
-        if (!response.ok) throw new Error("Error en la respuesta de Google");
-        
+        // Quitamos parámetros raros, vamos directo a la URL
+        const response = await fetch(WEB_APP_URL);
         const data = await response.json();
+        
         activos = data.activos || [];
         movimientos = data.movimientos || [];
         
-        console.log("Datos cargados correctamente");
         renderAll();
+        console.log("Conectado con éxito desde la web");
     } catch (e) {
-        console.error("Error de conexión:", e);
-        // Si sigue fallando el CORS, este mensaje te avisará
-        if(e.message.includes("fetch")) {
-            alert("Bloqueo de seguridad del navegador. Usa un servidor local o sube el archivo a la web.");
-        }
+        console.error("Error:", e);
+        // Si el error persiste, es probable que la URL en el HTML esté mal pegada
+        alert("Error de conexión. Revisa que la URL de Apps Script sea la correcta.");
     }
 }
-
+    
 // FUNCION CRITICA: Guarda datos en Sheets
 async function saveToSheets(payload) {
     await fetch(WEB_APP_URL, {
