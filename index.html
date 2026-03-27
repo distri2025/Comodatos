@@ -10,7 +10,7 @@ async function fetchData() {
         // Configuramos el fetch para seguir la redirección de Google
         const response = await fetch(WEB_APP_URL, {
             method: "GET",
-            mode: "cors", // Forzamos el modo CORS
+            mode: "cors", 
             redirect: "follow" // <--- ESTO ES VITAL PARA EL ERROR 302
         });
 
@@ -24,10 +24,8 @@ async function fetchData() {
         renderAll();
     } catch (e) {
         console.error("Error detallado:", e);
-        // Si el error persiste, limpia la consola y mira si el script de Google es público
     }
-}
-    
+}    
 // FUNCION CRITICA: Guarda datos en Sheets
 async function saveToSheets(payload) {
     await fetch(WEB_APP_URL, {
