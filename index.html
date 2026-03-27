@@ -3,57 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logística Luis Guillón - Control Total</title>
+    <title>Logística Luis Guillón - Gestión 360</title>
     <style>
         :root {
-            --primary: #185FA5; --success: #28a745; --danger: #dc3545; --warning: #ffc107; --dark: #343a40;
-            --bg: #f4f7f6; --text: #212529; --border: #dee2e6;
+            --primary: #185FA5; --success: #28a745; --danger: #dc3545; --warning: #ffc107;
+            --bg: #f8f9fa; --text: #212529; --border: #dee2e6;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
-        body { background: var(--bg); color: var(--text); font-size: 14px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; }
+        body { background: var(--bg); color: var(--text); font-size: 13px; }
         
-        .app { display: flex; height: 100vh; }
+        .app { display: flex; height: 100vh; overflow: hidden; }
         
         /* Sidebar */
-        .sidebar { width: 250px; background: #fff; border-right: 1px solid var(--border); display: flex; flex-direction: column; }
-        .sidebar-header { padding: 25px 20px; border-bottom: 1px solid var(--border); text-align: center; }
-        .sidebar-header b { color: var(--primary); font-size: 16px; letter-spacing: 1px; }
-        .nav-item { padding: 14px 20px; cursor: pointer; color: #555; transition: 0.2s; border-left: 5px solid transparent; display: flex; align-items: center; gap: 10px; }
-        .nav-item:hover { background: #f8f9fa; color: var(--primary); }
-        .nav-item.active { background: #eef4fb; color: var(--primary); border-left-color: var(--primary); font-weight: bold; }
-
-        /* Main */
-        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .topbar { background: #fff; padding: 15px 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .content { flex: 1; padding: 30px; overflow-y: auto; }
-
-        /* Dashboard Cards */
-        .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .metric-card { background: #fff; padding: 20px; border-radius: 10px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .metric-label { font-size: 11px; color: #888; text-transform: uppercase; font-weight: bold; }
-        .metric-val { font-size: 26px; font-weight: 800; margin-top: 5px; color: var(--dark); }
+        .sidebar { width: 230px; background: #fff; border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border); text-align: center; }
+        .sidebar-header b { color: var(--primary); font-size: 15px; }
         
-        /* Tables */
-        .section { background: #fff; border-radius: 10px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #fcfdfe; padding: 15px; text-align: left; font-size: 11px; color: #999; text-transform: uppercase; border-bottom: 2px solid var(--bg); }
-        td { padding: 15px; border-bottom: 1px solid var(--bg); vertical-align: middle; }
+        .nav-group { padding: 10px 0; flex: 1; }
+        .nav-item { padding: 12px 20px; cursor: pointer; color: #555; display: flex; align-items: center; gap: 10px; border-left: 4px solid transparent; }
+        .nav-item:hover { background: #f1f3f5; color: var(--primary); }
+        .nav-item.active { background: #eef4fb; color: var(--primary); border-left-color: var(--primary); font-weight: 600; }
 
-        /* Status Badges */
-        .badge { padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; display: inline-block; }
-        .badge-disponible { background: #d4edda; color: #155724; } /* Stock */
-        .badge-entregado { background: #cce5ff; color: #004085; }
-        .badge-baja { background: #343a40; color: #fff; } /* De baja */
-        .badge-servicio { background: #fff3cd; color: #856404; } /* Taller */
+        /* Main Content */
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .topbar { background: #fff; padding: 12px 25px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .content { flex: 1; padding: 20px; overflow-y: auto; }
 
-        /* Forms */
-        .form-box { max-width: 600px; background: #fff; padding: 30px; border-radius: 10px; border: 1px solid var(--border); }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 13px; color: #444; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
-        .btn { padding: 12px 25px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .btn-primary { background: var(--primary); color: #fff; width: 100%; }
-        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+        /* Metrics */
+        .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .metric-card { background: #fff; padding: 15px; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .metric-label { font-size: 10px; color: #888; text-transform: uppercase; font-weight: 700; }
+        .metric-val { font-size: 22px; font-weight: 800; margin-top: 4px; }
+
+        /* Sections & Tables */
+        .section { background: #fff; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px; overflow-x: auto; }
+        .section-title { padding: 12px 15px; background: #fafbfc; border-bottom: 1px solid var(--border); font-weight: 700; font-size: 12px; }
+        
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th { background: #fafbfc; padding: 10px 15px; text-align: left; font-size: 10px; color: #999; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+        td { padding: 12px 15px; border-bottom: 1px solid #f8f9fa; }
+
+        /* Badges */
+        .badge { padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .badge-stock { background: #d4edda; color: #155724; }
+        .badge-cliente { background: #cce5ff; color: #004085; }
+        .badge-baja { background: #343a40; color: #fff; }
+        .badge-alerta { background: #f8d7da; color: #721c24; }
+
+        /* Form */
+        .form-container { max-width: 500px; background: #fff; padding: 25px; border-radius: 8px; border: 1px solid var(--border); }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 11px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 13px; }
+        .btn { padding: 10px 20px; border-radius: 5px; border: none; cursor: pointer; font-weight: 700; width: 100%; }
+        .btn-primary { background: var(--primary); color: #fff; }
 
         .page { display: none; }
         .page.active { display: block; }
@@ -63,73 +66,78 @@
 
 <div class="app">
     <div class="sidebar">
-        <div class="sidebar-header"><b>LUIS GUILLÓN</b><br><small>Gestión de Heladeras</small></div>
-        <div class="nav-item active" onclick="showPage('dashboard', this)">Dashboard</div>
-        <div class="nav-item" onclick="showPage('stock', this)">Inventario (Stock)</div>
-        <div class="nav-item" onclick="showPage('performance', this)">Rendimiento Clientes</div>
-        <div class="nav-item" onclick="showPage('movimiento', this)">Nuevo Movimiento</div>
+        <div class="sidebar-header"><b>LUIS GUILLÓN</b><br><small>Gestión de Comodatos</small></div>
+        <div class="nav-group">
+            <div class="nav-item active" onclick="showPage('dashboard', this)">Dashboard</div>
+            <div class="nav-item" onclick="showPage('activos', this)">Activos</div>
+            <div class="nav-item" onclick="showPage('clientes', this)">Clientes (Performance)</div>
+            <div class="nav-item" onclick="showPage('movimientos', this)">Historial Movimientos</div>
+            <div class="nav-item" onclick="showPage('checklist', this)">Checklist / Auditoría</div>
+        </div>
     </div>
 
     <div class="main">
         <div class="topbar">
-            <h2 id="page-title">Panel de Control</h2>
-            <div id="sync-status" style="font-size:12px; color:var(--success)">● Sistema Sincronizado</div>
+            <h3 id="page-title">Dashboard</h3>
+            <div id="status" style="color:var(--success); font-size:11px">● Datos Sincronizados</div>
         </div>
 
         <div class="content">
             <div id="page-dashboard" class="page active">
                 <div class="metrics">
-                    <div class="metric-card"><div class="metric-label">Total Activos</div><div class="metric-val" id="m-total">0</div></div>
-                    <div class="metric-card"><div class="metric-label">En Depósito (Stock)</div><div class="metric-val" id="m-stock" style="color:var(--success)">0</div></div>
+                    <div class="metric-card"><div class="metric-label">Total Equipos</div><div class="metric-val" id="m-total">0</div></div>
+                    <div class="metric-card"><div class="metric-label">En Stock</div><div class="metric-val" id="m-stock" style="color:var(--success)">0</div></div>
                     <div class="metric-card"><div class="metric-label">En Clientes</div><div class="metric-val" id="m-clientes" style="color:var(--primary)">0</div></div>
-                    <div class="metric-card"><div class="metric-label">Bajas / Scrap</div><div class="metric-val" id="m-baja">0</div></div>
+                    <div class="metric-card"><div class="metric-label">Alertas</div><div class="metric-val" id="m-alert" style="color:var(--danger)">0</div></div>
                 </div>
                 <div class="section">
-                    <div style="padding:15px; font-weight:bold; background:#fafafa">Últimos Movimientos de Flota</div>
-                    <table id="table-recent">
-                        <thead><tr><th>Fecha</th><th>Operación</th><th>Equipo</th><th>Destino/Origen</th></tr></thead>
-                        <tbody id="body-recent"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="page-stock" class="page">
-                <div class="section">
+                    <div class="section-title">Últimos 5 Movimientos</div>
                     <table>
-                        <thead><tr><th>QR / ID</th><th>Modelo</th><th>Estado Actual</th><th>Ubicación</th></tr></thead>
-                        <tbody id="body-stock"></tbody>
+                        <thead><tr><th>Fecha</th><th>Tipo</th><th>Equipo</th><th>Cliente</th></tr></thead>
+                        <tbody id="dash-mov-body"></tbody>
                     </table>
                 </div>
             </div>
 
-            <div id="page-performance" class="page">
+            <div id="page-activos" class="page">
                 <div class="section">
+                    <div class="section-title">Inventario Maestro de Heladeras</div>
                     <table>
-                        <thead><tr><th>Cliente</th><th>Equipos</th><th>Promedio Cajones</th><th>Rentabilidad</th></tr></thead>
-                        <tbody id="body-performance"></tbody>
+                        <thead><tr><th>QR</th><th>Modelo</th><th>Estado</th><th>Ubicación Actual</th></tr></thead>
+                        <tbody id="activos-body"></tbody>
                     </table>
                 </div>
             </div>
 
-            <div id="page-movimiento" class="page">
-                <div class="form-box">
-                    <h3>Registrar Cambio de Estado</h3>
-                    <p style="margin-bottom:20px; color:#666">Usa este formulario para mover equipos entre el depósito, clientes o darlos de baja.</p>
-                    
-                    <div class="form-group">
-                        <label>Tipo de Operación</label>
-                        <select id="f-tipo">
-                            <option value="Entrega">Entrega a Cliente (Sale de Stock)</option>
-                            <option value="Retiro">Retiro de Cliente (Vuelve a Stock)</option>
-                            <option value="Baja">Dar de Baja (Rotura/Pérdida)</option>
-                            <option value="Taller">Enviar a Reparación</option>
-                        </select>
-                    </div>
-                    <div class="form-group"><label>QR del Equipo</label><input id="f-qr" placeholder="Ej: HEL-402"></div>
-                    <div class="form-group"><label>Cliente / Destino</label><input id="f-cliente" placeholder="Nombre del local o 'DEPÓSITO'"></div>
-                    <div class="form-group"><label>Chofer / Responsable</label><input id="f-chofer"></div>
-                    
-                    <button class="btn btn-primary" onclick="enviarMovimiento()">Sincronizar con Planilla</button>
+            <div id="page-clientes" class="page">
+                <div class="section">
+                    <div class="section-title">Análisis de Rentabilidad (Min. 20 cajones)</div>
+                    <table>
+                        <thead><tr><th>Nombre Cliente</th><th>Equipos</th><th>Promedio Cajones</th><th>Estado</th></tr></thead>
+                        <tbody id="clientes-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="page-movimientos" class="page">
+                <div class="section">
+                    <div class="section-title">Historial Completo de Flota</div>
+                    <table>
+                        <thead><tr><th>Fecha</th><th>Tipo</th><th>Equipo</th><th>Cliente/Destino</th><th>Chofer</th></tr></thead>
+                        <tbody id="movs-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="page-checklist" class="page">
+                <div class="form-container">
+                    <h3>Checklist de Auditoría</h3>
+                    <p style="margin-bottom:20px; color:#666">Censo preventivo de heladeras en punto de venta.</p>
+                    <div class="form-group"><label>Cliente</label><input id="chk-cliente"></div>
+                    <div class="form-group"><label>Equipo (QR)</label><input id="chk-qr"></div>
+                    <div class="form-group"><label>¿Encendida?</label><select id="chk-luz"><option>Sí</option><option>No</option></select></div>
+                    <div class="form-group"><label>¿Solo nuestra marca?</label><select id="chk-mix"><option>Sí</option><option>No / Mezclado</option></select></div>
+                    <button class="btn btn-primary" onclick="enviarAuditoria()">Guardar Auditoría</button>
                 </div>
             </div>
         </div>
@@ -138,77 +146,80 @@
 
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwYYiFak55C-TGCnUtxF3NXztqsN28B5cmpOS0HN4g4bVPwqjsKkq2Hyxt-EFUAENmV/exec";
-    let db = { activos: [], movimientos: [] };
+    let database = { activos: [], movimientos: [] };
 
-    async function cargarDatos() {
+    async function fetchData() {
         try {
             const res = await fetch(WEB_APP_URL);
-            db = await res.json();
-            actualizarInterfaz();
-        } catch (e) { document.getElementById('sync-status').innerText = "○ Error de conexión"; }
+            database = await res.json();
+            render();
+        } catch (e) { document.getElementById('status').innerText = "○ Error de conexión"; }
     }
 
-    function actualizarInterfaz() {
-        // Métricas
-        document.getElementById('m-total').innerText = db.activos.length;
-        document.getElementById('m-stock').innerText = db.activos.filter(a => a.Estado === 'Disponible' || a.Estado === 'Stock').length;
-        document.getElementById('m-clientes').innerText = db.activos.filter(a => a.Estado === 'Entregado').length;
-        document.getElementById('m-baja').innerText = db.activos.filter(a => a.Estado === 'Baja').length;
+    function render() {
+        const { activos, movimientos } = database;
 
-        // Tabla Stock
-        document.getElementById('body-stock').innerHTML = db.activos.map(a => `
+        // Dashboard Metrics
+        document.getElementById('m-total').innerText = activos.length;
+        document.getElementById('m-stock').innerText = activos.filter(a => a.Estado === 'Disponible' || a.Estado === 'Stock').length;
+        document.getElementById('m-clientes').innerText = activos.filter(a => a.Estado === 'Entregado').length;
+
+        // Activos Table
+        document.getElementById('activos-body').innerHTML = activos.map(a => `
             <tr>
-                <td><b>${a.QR}</b></td>
-                <td>${a.Modelo}</td>
-                <td><span class="badge badge-${a.Estado.toLowerCase()}">${a.Estado}</span></td>
-                <td>${a.Cliente || 'DEPÓSITO CENTRAL'}</td>
+                <td><b>${a.QR}</b></td><td>${a.Modelo}</td>
+                <td><span class="badge ${a.Estado === 'Disponible' || a.Estado === 'Stock' ? 'badge-stock' : 'badge-cliente'}">${a.Estado}</span></td>
+                <td>${a.Cliente || 'GALPÓN LUIS GUILLÓN'}</td>
             </tr>`).join('');
 
-        // Tabla Performance
+        // Clientes Performance
         const perf = {};
-        db.activos.filter(a => a.Estado === 'Entregado').forEach(a => {
+        activos.filter(a => a.Estado === 'Entregado').forEach(a => {
             if(!perf[a.Cliente]) perf[a.Cliente] = { q:0, v:0 };
             perf[a.Cliente].q++;
             perf[a.Cliente].v += parseFloat(a.ComprasMes || 0);
         });
-        document.getElementById('body-performance').innerHTML = Object.entries(perf).map(([name, d]) => {
-            const p = (d.v / d.q).toFixed(1);
-            const ok = p >= 20;
-            return `<tr><td>${name}</td><td>${d.q}</td><td>${p} caj/mes</td><td><span class="badge ${ok?'badge-disponible':'badge-baja'}">${ok?'Rentable':'BAJO MINIMO'}</span></td></tr>`;
-        }).join('');
 
-        // Recientes
-        document.getElementById('body-recent').innerHTML = [...db.movimientos].reverse().slice(0,6).map(m => `
-            <tr><td>${m.Fecha}</td><td>${m.Tipo}</td><td>${m.Activo}</td><td>${m.Cliente}</td></tr>`).join('');
+        let alertas = 0;
+        document.getElementById('clientes-body').innerHTML = Object.entries(perf).map(([name, d]) => {
+            const prom = (d.v / d.q).toFixed(1);
+            const ok = prom >= 20;
+            if(!ok) alertas++;
+            return `<tr><td>${name}</td><td>${d.q}</td><td>${prom} caj/mes</td><td><span class="badge ${ok?'badge-stock':'badge-alerta'}">${ok?'RENTABLE':'BAJO RENDIMIENTO'}</span></td></tr>`;
+        }).join('');
+        document.getElementById('m-alert').innerText = alertas;
+
+        // Movimientos
+        const movRows = (arr) => arr.map(m => `<tr><td>${m.Fecha}</td><td>${m.Tipo}</td><td>${m.Activo}</td><td>${m.Cliente}</td><td>${m.Chofer || '-'}</td></tr>`).join('');
+        document.getElementById('dash-mov-body').innerHTML = movRows([...movimientos].reverse().slice(0,5));
+        document.getElementById('movs-body').innerHTML = movRows([...movimientos].reverse());
     }
 
-    async function enviarMovimiento() {
+    async function enviarAuditoria() {
         const payload = {
-            metodo: "nuevoMovimiento",
-            tipo: document.getElementById('f-tipo').value,
-            activo: document.getElementById('f-qr').value,
-            cliente: document.getElementById('f-cliente').value,
-            chofer: document.getElementById('f-chofer').value,
-            fecha: new Date().toLocaleDateString()
+            metodo: "nuevaAuditoria",
+            fecha: new Date().toLocaleDateString(),
+            cliente: document.getElementById('chk-cliente').value,
+            qr: document.getElementById('chk-qr').value,
+            luz: document.getElementById('chk-luz').value,
+            mix: document.getElementById('chk-mix').value
         };
-        
-        document.getElementById('sync-status').innerText = "⏳ Enviando...";
         await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-        alert("Movimiento registrado con éxito.");
-        location.reload(); 
+        alert("Auditoría enviada.");
+        fetchData();
     }
 
     function showPage(id, el) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById('page-' + id).classList.add('active');
-        document.getElementById('page-title').innerText = el ? el.innerText : "Panel";
+        document.getElementById('page-title').innerText = el ? el.innerText : "Dashboard";
         if(el) {
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
         }
     }
 
-    window.onload = cargarDatos;
+    window.onload = fetchData;
 </script>
 </body>
 </html>
