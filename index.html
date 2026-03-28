@@ -28,7 +28,6 @@ nav{padding:8px 0;flex:1}
 .nav-item{display:flex;align-items:center;gap:10px;padding:9px 18px;font-size:13px;color:var(--text2);cursor:pointer;border-left:2px solid transparent;transition:background .1s;user-select:none}
 .nav-item:hover{background:var(--bg2)}
 .nav-item.active{color:var(--text);background:var(--bg2);border-left-color:var(--blue-600);font-weight:500}
-.nav-sep{height:1px;background:var(--border);margin:6px 12px}
 .sidebar-footer{padding:12px 18px;border-top:1px solid var(--border);font-size:11px;color:var(--text3)}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
 .topbar{background:var(--bg);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
@@ -42,7 +41,6 @@ nav{padding:8px 0;flex:1}
 .btn-sm{padding:4px 10px;font-size:12px}
 .btn-success{background:var(--green-50);color:var(--green-600);border-color:#9FE1CB}
 .btn-success:hover{background:#C0DD97}
-.btn-danger{background:var(--red-50);color:var(--red-600);border-color:var(--red-200)}
 .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:20px}
 .metric{background:var(--bg2);border-radius:var(--r);padding:14px 16px}
 .metric-label{font-size:11px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
@@ -88,83 +86,81 @@ tr.alert-row:hover td{background:#FFE8E8}
 .tl-sub{color:var(--text3);font-size:12px;margin-top:2px}
 .page{display:none}
 .page.active{display:block}
-/* Modal en flujo */
 .modal-overlay{display:none;background:rgba(26,26,24,.45);border-radius:var(--rl);padding:32px 20px;margin-bottom:20px;justify-content:center}
 .modal-overlay.open{display:flex}
-.modal{background:var(--bg);border-radius:var(--rl);border:1px solid var(--border2);width:100%;max-width:540px}
+.modal{background:var(--bg);border-radius:var(--rl);border:1px solid var(--border2);width:100%;max-width:520px}
 .modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
 .modal-header h2{font-size:15px;font-weight:500}
 .modal-body{padding:20px}
 .modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
 .form-group{margin-bottom:14px}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
 label{font-size:12px;font-weight:500;color:var(--text2);display:block;margin-bottom:4px}
 input,select,textarea{width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text);font-family:var(--font)}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-600)}
-/* Cliente autocomplete */
+.cl-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.cl-item:last-child{border-bottom:none}
+.cl-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--bg);font-size:11px;transition:background .1s}
+.cl-check.on{background:#639922;border-color:#639922;color:#fff}
+.empty-state{text-align:center;padding:32px;color:var(--text3);font-size:13px}
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid var(--border2);border-top-color:var(--blue-600);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--gray-900);color:#fff;padding:10px 18px;border-radius:var(--r);font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:999}
+.toast.show{opacity:1}
+
+/* ── Importar compras ── */
+.drop-zone{border:2px dashed var(--border2);border-radius:var(--rl);padding:32px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s}
+.drop-zone:hover,.drop-zone.over{border-color:var(--blue-600);background:var(--blue-50)}
+.drop-zone p{font-size:13px;color:var(--text3);margin-top:8px}
+.drop-icon{font-size:28px}
+.map-table{width:100%;font-size:13px;border-collapse:collapse;margin-top:12px}
+.map-table th{font-size:11px;color:var(--text3);padding:6px 8px;text-align:left;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.4px}
+.map-table td{padding:6px 8px;border-bottom:1px solid var(--border)}
+.map-table tr:last-child td{border-bottom:none}
+.map-table select{font-size:12px;padding:4px 6px}
+.preview-table{width:100%;font-size:12px;border-collapse:collapse;margin-top:8px;max-height:200px;overflow-y:auto;display:block}
+.preview-table th{font-size:11px;color:var(--text3);padding:5px 10px;text-align:left;border-bottom:1px solid var(--border);text-transform:uppercase;position:sticky;top:0;background:var(--bg)}
+.preview-table td{padding:5px 10px;border-bottom:1px solid var(--border)}
+.preview-table .match{color:var(--green-600);font-weight:500}
+.preview-table .no-match{color:var(--red-600)}
+.info-box{background:var(--blue-50);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--blue-600);margin-bottom:14px}
+.warn-box{background:var(--amber-50);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--amber-600);margin-bottom:14px}
+.unit-toggle{display:flex;gap:0;border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;width:fit-content}
+.unit-btn{padding:6px 14px;font-size:12px;cursor:pointer;border:none;background:var(--bg);color:var(--text2);font-family:var(--font);transition:background .1s}
+.unit-btn.active{background:var(--blue-600);color:#fff}
+
+/* ── NUEVO: Clientes ── */
+.client-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--rl);padding:14px 18px;margin-bottom:10px;display:flex;align-items:center;gap:14px}
+.client-avatar{width:38px;height:38px;border-radius:50%;background:var(--blue-50);color:var(--blue-600);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;flex-shrink:0}
+.client-info{flex:1;min-width:0}
+.client-name{font-weight:500;font-size:13px}
+.client-meta{font-size:12px;color:var(--text3);margin-top:3px;display:flex;gap:12px;flex-wrap:wrap}
+/* ── NUEVO: Autocomplete cliente ── */
 .ac-wrap{position:relative}
-.ac-input{width:100%}
-.ac-list{position:absolute;top:100%;left:0;right:0;background:var(--bg);border:1px solid var(--border2);border-radius:var(--r);z-index:50;max-height:200px;overflow-y:auto;display:none;box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.ac-list{position:absolute;top:100%;left:0;right:0;background:var(--bg);border:1px solid var(--border2);border-radius:var(--r);z-index:50;max-height:200px;overflow-y:auto;display:none;margin-top:2px}
 .ac-list.open{display:block}
 .ac-item{padding:9px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--border)}
 .ac-item:last-child{border-bottom:none}
 .ac-item:hover{background:var(--bg2)}
 .ac-item .ac-id{font-family:var(--mono);font-size:11px;color:var(--text3);margin-left:6px}
 .ac-item .ac-sub{font-size:11px;color:var(--text3);margin-top:2px}
-.ac-item.ac-new{color:var(--blue-600);font-weight:500}
-.selected-client{background:var(--blue-50);border:1px solid var(--blue-600);border-radius:var(--r);padding:8px 12px;font-size:13px;display:flex;justify-content:space-between;align-items:center}
-.selected-client .sc-name{font-weight:500}
-.selected-client .sc-sub{font-size:11px;color:var(--blue-600);margin-top:2px}
-/* Checklist */
-.cl-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
-.cl-item:last-child{border-bottom:none}
-.cl-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--bg);font-size:11px;transition:background .1s}
-.cl-check.on{background:#639922;border-color:#639922;color:#fff}
-/* Cliente card */
-.client-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--rl);padding:16px 20px;margin-bottom:10px;display:flex;align-items:center;gap:16px}
-.client-avatar{width:40px;height:40px;border-radius:50%;background:var(--blue-50);color:var(--blue-600);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500;flex-shrink:0}
-.client-info{flex:1;min-width:0}
-.client-name{font-weight:500;font-size:14px}
-.client-meta{font-size:12px;color:var(--text3);margin-top:3px;display:flex;gap:12px;flex-wrap:wrap}
-.client-actions{display:flex;gap:6px;flex-shrink:0}
-/* Importar */
-.drop-zone{border:2px dashed var(--border2);border-radius:var(--rl);padding:32px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s}
-.drop-zone:hover,.drop-zone.over{border-color:var(--blue-600);background:var(--blue-50)}
-.drop-zone p{font-size:13px;color:var(--text3);margin-top:8px}
-.map-table{width:100%;font-size:13px;border-collapse:collapse;margin-top:12px}
-.map-table th{font-size:11px;color:var(--text3);padding:6px 8px;text-align:left;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.4px}
-.map-table td{padding:6px 8px;border-bottom:1px solid var(--border)}
-.map-table tr:last-child td{border-bottom:none}
-.prev-wrap{overflow-x:auto;max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--r)}
-.preview-table{width:100%;font-size:12px;border-collapse:collapse}
-.preview-table th{font-size:11px;color:var(--text3);padding:5px 10px;text-align:left;border-bottom:1px solid var(--border);text-transform:uppercase;position:sticky;top:0;background:var(--bg)}
-.preview-table td{padding:5px 10px;border-bottom:1px solid var(--border)}
-.match{color:var(--green-600);font-weight:500}.no-match{color:var(--red-600)}
-.info-box{background:var(--blue-50);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--blue-600);margin-bottom:14px}
-.warn-box{background:var(--amber-50);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--amber-600);margin-bottom:14px}
-.unit-toggle{display:flex;border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;width:fit-content}
-.unit-btn{padding:6px 14px;font-size:12px;cursor:pointer;border:none;background:var(--bg);color:var(--text2);font-family:var(--font)}
-.unit-btn.active{background:var(--blue-600);color:#fff}
-.step-label{font-size:12px;font-weight:500;color:var(--text3);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
-.empty-state{text-align:center;padding:32px;color:var(--text3);font-size:13px}
-.spinner{display:inline-block;width:13px;height:13px;border:2px solid var(--border2);border-top-color:var(--blue-600);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle}
-@keyframes spin{to{transform:rotate(360deg)}}
-.toast{position:fixed;bottom:24px;right:24px;background:var(--gray-900);color:#fff;padding:10px 18px;border-radius:var(--r);font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:999}
-.toast.show{opacity:1}
+.sel-client{background:var(--blue-50);border:1px solid var(--blue-600);border-radius:var(--r);padding:8px 12px;font-size:13px;display:flex;justify-content:space-between;align-items:center;margin-bottom:0}
+.sel-client-name{font-weight:500}
+.sel-client-sub{font-size:11px;color:var(--blue-600);margin-top:2px}
 </style>
 </head>
 <body>
 <div class="app">
   <div class="sidebar">
-    <div class="logo"><h1>🧊 Comodatos</h1><small id="sync-label">Cargando...</small></div>
+    <div class="logo">
+      <h1>🧊 Comodatos</h1>
+      <small id="sync-label">Cargando...</small>
+    </div>
     <nav>
       <div class="nav-item active" onclick="showPage('dashboard',this)">▦ Dashboard</div>
-      <div class="nav-sep"></div>
-      <div class="nav-item" onclick="showPage('clientes-page',this)">◉ Clientes</div>
       <div class="nav-item" onclick="showPage('activos',this)">◈ Activos</div>
+      <div class="nav-item" onclick="showPage('clientes',this)">◉ Clientes</div>
       <div class="nav-item" onclick="showPage('movimientos',this)">◎ Movimientos</div>
-      <div class="nav-sep"></div>
       <div class="nav-item" onclick="showPage('checklist',this)">◻ Checklist</div>
       <div class="nav-item" onclick="showPage('compras',this)">↑ Importar compras</div>
     </nav>
@@ -177,25 +173,25 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-600
         <span class="topbar-title" id="page-title">Dashboard</span>
         <span id="spinner" style="display:none"><span class="spinner"></span></span>
       </div>
-      <div style="display:flex;gap:8px" id="topbar-actions">
+      <div style="display:flex;gap:8px">
         <button class="btn" onclick="openModal('modal-activo')">+ Nuevo activo</button>
         <button class="btn btn-primary" onclick="openModal('modal-mov')">+ Registrar movimiento</button>
       </div>
     </div>
 
-    <div class="content">
+    <div class="content" id="app-content">
 
-      <!-- ── DASHBOARD ── -->
+      <!-- DASHBOARD — sin cambios -->
       <div class="page active" id="page-dashboard">
         <div class="alert-banner" id="alert-banner">⚠ <span id="alert-text"></span></div>
         <div class="metrics">
           <div class="metric"><div class="metric-label">Total activos</div><div class="metric-value" id="m-total">—</div><div class="metric-sub">en el parque</div></div>
           <div class="metric"><div class="metric-label">Entregados</div><div class="metric-value" id="m-ent" style="color:var(--blue-600)">—</div><div class="metric-sub">comodato activo</div></div>
-          <div class="metric"><div class="metric-label">En servicio</div><div class="metric-value" id="m-srv" style="color:#BA7517">—</div><div class="metric-sub">en reparación</div></div>
+          <div class="metric"><div class="metric-label">En servicio técnico</div><div class="metric-value" id="m-srv" style="color:#BA7517">—</div><div class="metric-sub">en reparación</div></div>
           <div class="metric"><div class="metric-label">Alertas</div><div class="metric-value" id="m-alt" style="color:var(--red-600)">—</div><div class="metric-sub">requieren atención</div></div>
         </div>
         <div class="card">
-          <div class="card-header"><span class="card-title">Activos con alertas</span><button class="btn btn-sm" onclick="showPage('activos',document.querySelectorAll('.nav-item')[3])">Ver todos →</button></div>
+          <div class="card-header"><span class="card-title">Activos con alertas</span><button class="btn btn-sm" onclick="showPage('activos',document.querySelectorAll('.nav-item')[1])">Ver todos →</button></div>
           <div class="table-wrap"><table><thead><tr><th>ID</th><th>Modelo</th><th>Cliente</th><th>Alerta</th><th>Último censo</th></tr></thead><tbody id="dash-alerts"></tbody></table></div>
         </div>
         <div class="card">
@@ -204,38 +200,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-600
         </div>
       </div>
 
-      <!-- ── CLIENTES ── -->
-      <div class="page" id="page-clientes-page">
-        <!-- Modal nuevo/editar cliente -->
-        <div class="modal-overlay" id="modal-cliente">
-          <div class="modal">
-            <div class="modal-header"><h2 id="modal-cli-title">Nuevo cliente</h2><button class="btn btn-sm" onclick="closeModal('modal-cliente')">✕</button></div>
-            <div class="modal-body">
-              <div class="form-row">
-                <div class="form-group"><label>Código / ID *</label><input id="fc-id" placeholder="CLI-001"/></div>
-                <div class="form-group"><label>Nombre *</label><input id="fc-nombre" placeholder="Razón social o nombre"/></div>
-              </div>
-              <div class="form-group"><label>Dirección</label><input id="fc-dir" placeholder="Calle y número"/></div>
-              <div class="form-row">
-                <div class="form-group"><label>Zona / Ruta</label><input id="fc-zona" placeholder="Ej: Zona Norte, Ruta 3"/></div>
-                <div class="form-group"><label>Contacto / Teléfono</label><input id="fc-tel" placeholder="+54 11 ..."/></div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button class="btn" onclick="closeModal('modal-cliente')">Cancelar</button>
-              <button class="btn btn-primary" id="btn-save-cli" onclick="saveCliente()">Guardar</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="toolbar">
-          <input class="search-input" type="text" placeholder="Buscar cliente..." id="search-cli" oninput="renderClientes()">
-          <button class="btn btn-primary" onclick="openModalCliente()">+ Nuevo cliente</button>
-        </div>
-        <div id="clientes-list"></div>
-      </div>
-
-      <!-- ── ACTIVOS ── -->
+      <!-- ACTIVOS — sin cambios -->
       <div class="page" id="page-activos">
         <div class="modal-overlay" id="modal-activo">
           <div class="modal">
@@ -273,7 +238,39 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-600
         </div>
       </div>
 
-      <!-- ── MOVIMIENTOS ── -->
+      <!-- CLIENTES — NUEVO: tarjetas + modal alta/edición -->
+      <div class="page" id="page-clientes">
+
+        <!-- Modal nuevo/editar cliente -->
+        <div class="modal-overlay" id="modal-cliente">
+          <div class="modal">
+            <div class="modal-header"><h2 id="modal-cli-title">Nuevo cliente</h2><button class="btn btn-sm" onclick="closeModal('modal-cliente')">✕</button></div>
+            <div class="modal-body">
+              <div class="form-row">
+                <div class="form-group"><label>Código / ID *</label><input id="fc-id" placeholder="CLI-001"/></div>
+                <div class="form-group"><label>Nombre *</label><input id="fc-nombre" placeholder="Razón social o nombre"/></div>
+              </div>
+              <div class="form-group"><label>Dirección</label><input id="fc-dir" placeholder="Calle y número"/></div>
+              <div class="form-row">
+                <div class="form-group"><label>Zona / Ruta</label><input id="fc-zona" placeholder="Ej: Zona Norte"/></div>
+                <div class="form-group"><label>Contacto / Teléfono</label><input id="fc-tel" placeholder="+54 11 ..."/></div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn" onclick="closeModal('modal-cliente')">Cancelar</button>
+              <button class="btn btn-primary" onclick="saveCliente()">Guardar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <input class="search-input" type="text" placeholder="Buscar cliente..." id="search-cli" oninput="renderClientes()">
+          <button class="btn btn-primary" onclick="abrirModalCliente()">+ Nuevo cliente</button>
+        </div>
+        <div id="clientes-list"></div>
+      </div>
+
+      <!-- MOVIMIENTOS — solo cambia el campo cliente -->
       <div class="page" id="page-movimientos">
         <div class="modal-overlay" id="modal-mov">
           <div class="modal">
@@ -282,29 +279,41 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-600
               <div class="form-row">
                 <div class="form-group"><label>Tipo *</label>
                   <select id="f-tipo" onchange="toggleFail()">
-                    <option>Entrega</option><option>Retiro</option>
-                    <option>Servicio técnico</option><option>Alta disponible</option><option>Baja</option>
+                    <option>Entrega</option>
+                    <option>Retiro</option>
+                    <option>Servicio técnico</option>
+                    <option>Alta disponible</option>
+                    <option>Baja</option>
                   </select>
                 </div>
                 <div class="form-group"><label>Activo (QR) *</label><select id="f-act-id"></select></div>
               </div>
 
-              <!-- Selector de cliente con autocomplete -->
-              <div class="form-group" id="cliente-field">
+              <!-- NUEVO: autocomplete cliente en lugar de select estático -->
+              <div class="form-group">
                 <label>Cliente</label>
-                <div id="selected-client-display" style="display:none">
-                  <div class="selected-client">
-                    <div><div class="sc-name" id="sc-name"></div><div class="sc-sub" id="sc-sub"></div></div>
-                    <button class="btn btn-sm" onclick="clearClienteSelection()">Cambiar</button>
+                <div id="sel-client-display" style="display:none">
+                  <div class="sel-client">
+                    <div>
+                      <div class="sel-client-name" id="sel-client-name"></div>
+                      <div class="sel-client-sub" id="sel-client-sub"></div>
+                    </div>
+                    <button class="btn btn-sm" onclick="clearClienteSel()">Cambiar</button>
                   </div>
                 </div>
-                <div id="client-search-wrap" class="ac-wrap">
-                  <input class="ac-input" id="f-cli-search" placeholder="Escribí nombre o código del cliente..." autocomplete="off"
-                    oninput="filterClienteAC(this.value)" onfocus="filterClienteAC(this.value)" onblur="setTimeout(()=>closeAC(),150)">
+                <div id="cli-ac-wrap" class="ac-wrap">
+                  <input id="f-cli-search" class="search-input" style="width:100%" placeholder="Escribí nombre o código..."
+                    autocomplete="off"
+                    oninput="filtrarAC(this.value)"
+                    onfocus="filtrarAC(this.value)"
+                    onblur="setTimeout(cerrarAC, 150)">
                   <div class="ac-list" id="ac-list"></div>
                 </div>
               </div>
+              <!-- campo oculto que guarda el valor seleccionado (compatible con saveMovimiento) -->
+              <input type="hidden" id="f-cli" value="">
 
+              <div class="form-group"><label>Responsable</label><input id="f-chofer" placeholder="Nombre del chofer/vendedor"/></div>
               <div class="form-group" id="fail-wrap" style="display:none"><label>Motivo / Failure code</label>
                 <select id="f-fail">
                   <option value="">Seleccionar...</option>
@@ -314,7 +323,6 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-600
                   <option>Fin de vida útil</option><option>Otro</option>
                 </select>
               </div>
-              <div class="form-group"><label>Responsable</label><input id="f-chofer" placeholder="Nombre del chofer/vendedor"/></div>
               <div class="form-row">
                 <div class="form-group"><label>Fecha *</label><input id="f-fecha" type="date"/></div>
                 <div class="form-group" id="compras-wrap"><label>Compras del mes (cajones)</label><input id="f-compras" type="number" placeholder="0"/></div>
@@ -332,52 +340,52 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-600
         </div>
       </div>
 
-      <!-- ── CHECKLIST ── -->
+      <!-- CHECKLIST — sin cambios -->
       <div class="page" id="page-checklist">
         <div class="card">
           <div class="card-header">
             <span class="card-title">Checklist de preventa mensual</span>
-            <select id="cli-sel" style="font-size:13px;padding:5px 8px;width:240px" onchange="renderChecklist()">
+            <select id="cli-sel" style="font-size:13px;padding:5px 8px;width:220px" onchange="renderChecklist()">
               <option value="">Seleccionar cliente...</option>
             </select>
           </div>
-          <div id="checklist-content" class="card-body"><div class="empty-state">Seleccioná un cliente.</div></div>
+          <div id="checklist-content" class="card-body"><div class="empty-state">Seleccioná un cliente para ver el checklist.</div></div>
         </div>
       </div>
 
-      <!-- ── IMPORTAR COMPRAS ── -->
+      <!-- IMPORTAR COMPRAS — sin cambios -->
       <div class="page" id="page-compras">
         <div class="card">
           <div class="card-header">
             <span class="card-title">Importar compras desde CSV</span>
-            <span style="font-size:12px;color:var(--text3)">Actualiza Compras_Mes en todos los activos entregados del período</span>
+            <span style="font-size:12px;color:var(--text3)">Actualiza automáticamente el campo Compras_Mes de todos los activos entregados</span>
           </div>
           <div class="card-body">
             <div id="step1">
-              <div class="step-label">Paso 1 — Subir archivo</div>
+              <div style="font-size:12px;font-weight:500;color:var(--text3);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Paso 1 — Subir archivo</div>
               <div class="drop-zone" id="drop-zone" onclick="document.getElementById('csv-input').click()"
                 ondragover="event.preventDefault();this.classList.add('over')"
                 ondragleave="this.classList.remove('over')"
                 ondrop="handleDrop(event)">
-                <div style="font-size:28px">📄</div>
-                <div style="font-size:14px;font-weight:500;margin-top:8px">Arrastrá tu CSV o hacé clic para seleccionar</div>
-                <p>Archivos .csv o .txt — separadores: coma, punto y coma, tabulación</p>
+                <div class="drop-icon">📄</div>
+                <div style="font-size:14px;font-weight:500;margin-top:8px">Arrastrá tu CSV aquí o hacé clic para seleccionar</div>
+                <p>Archivos .csv o .txt — separados por coma, punto y coma, o tabulación</p>
               </div>
               <input type="file" id="csv-input" accept=".csv,.txt" style="display:none" onchange="handleFile(this.files[0])">
             </div>
             <div id="step2" style="display:none">
-              <div class="step-label">Paso 2 — Mapear columnas</div>
+              <div style="font-size:12px;font-weight:500;color:var(--text3);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Paso 2 — Mapear columnas</div>
               <div class="info-box" id="file-info"></div>
               <table class="map-table">
-                <thead><tr><th>Campo</th><th>Columna en tu archivo</th></tr></thead>
+                <thead><tr><th>Campo requerido</th><th>Columna en tu archivo</th></tr></thead>
                 <tbody>
-                  <tr><td>Identificador del cliente *</td><td><select id="map-cliente" onchange="updatePreview()"></select></td></tr>
-                  <tr><td>Cantidad (bultos/unidades) *</td><td><select id="map-cantidad" onchange="updatePreview()"></select></td></tr>
+                  <tr><td>Identificador del cliente *</td><td><select id="map-cliente"></select></td></tr>
+                  <tr><td>Cantidad (bultos/unidades) *</td><td><select id="map-cantidad"></select></td></tr>
                   <tr><td>Período (opcional)</td><td><select id="map-periodo"><option value="">— no incluir —</option></select></td></tr>
                 </tbody>
               </table>
               <div style="margin-top:16px">
-                <div class="step-label" style="margin-bottom:8px">Unidad de medida</div>
+                <div style="font-size:12px;font-weight:500;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Unidad de medida</div>
                 <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
                   <div class="unit-toggle">
                     <button class="unit-btn active" id="unit-bultos" onclick="setUnit('bultos')">Bultos</button>
@@ -386,6 +394,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-600
                   <div id="conversion-wrap" style="display:flex;align-items:center;gap:8px">
                     <span style="font-size:13px;color:var(--text2)">Unidades por bulto:</span>
                     <input id="unid-por-bulto" type="number" value="12" min="1" style="width:70px" oninput="updatePreview()">
+                    <span style="font-size:12px;color:var(--text3)" id="conversion-hint"></span>
                   </div>
                 </div>
               </div>
@@ -395,11 +404,13 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-600
               </div>
             </div>
             <div id="step3" style="display:none">
-              <div class="step-label">Paso 3 — Confirmar importación</div>
+              <div style="font-size:12px;font-weight:500;color:var(--text3);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Paso 3 — Confirmar importación</div>
               <div id="preview-info" class="info-box"></div>
               <div id="preview-warn" class="warn-box" style="display:none"></div>
-              <div style="font-size:12px;font-weight:500;color:var(--text3);margin-bottom:6px">Previsualización</div>
-              <div class="prev-wrap"><table class="preview-table"><thead id="prev-head"></thead><tbody id="prev-body"></tbody></table></div>
+              <div style="font-size:12px;font-weight:500;color:var(--text3);margin-bottom:6px">Previsualización (primeras 15 filas)</div>
+              <div style="overflow-x:auto;max-height:240px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--r)">
+                <table class="preview-table"><thead id="prev-head"></thead><tbody id="prev-body"></tbody></table>
+              </div>
               <div style="margin-top:20px;display:flex;gap:8px">
                 <button class="btn btn-success" onclick="applyImport()">✓ Aplicar importación</button>
                 <button class="btn" onclick="goStep(2)">← Ajustar mapeo</button>
@@ -412,7 +423,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-600
                 <div style="font-size:16px;font-weight:500;margin-bottom:8px" id="result-title"></div>
                 <div style="font-size:13px;color:var(--text3);margin-bottom:24px" id="result-sub"></div>
                 <div style="display:flex;gap:8px;justify-content:center">
-                  <button class="btn btn-primary" onclick="showPage('clientes-page',document.querySelectorAll('.nav-item')[2])">Ver clientes →</button>
+                  <button class="btn btn-primary" onclick="showPage('clientes',document.querySelectorAll('.nav-item')[2])">Ver clientes →</button>
                   <button class="btn" onclick="resetImport()">Importar otro archivo</button>
                 </div>
               </div>
@@ -434,422 +445,346 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbznsA6xpkAJd5Csz3IPf
 const MIN_CAJONES = 20;
 const MAX_DIAS_CENSO = 30;
 
-let activos = [], movimientos = [], clientes = [];
-let activoFilter = 'todos';
-let selectedClienteId = null;   // cliente seleccionado en modal movimiento
-let editingClienteIdx = null;   // índice al editar un cliente existente
+let activos = [], movimientos = [], activoFilter = 'todos';
+let clientes = [];           // NUEVO
+let editingCliIdx = null;    // NUEVO
 
-// ── CSV state ────────────────────────────
+// ── Estado importación ─────────────────
 let csvRows = [], csvHeaders = [], csvUnit = 'bultos';
 
-// ── API ──────────────────────────────────
+// ── API — sin cambios ────────────────────
 async function api(params) {
   if (params.method === 'GET') {
     const r = await fetch(SCRIPT_URL + '?' + new URLSearchParams(params.query));
     return r.json();
   }
-  const r = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(params.body) });
+  const r = await fetch(SCRIPT_URL, { method:'POST', body: JSON.stringify(params.body) });
   return r.json();
 }
 
 async function loadAll() {
   setLoading(true); setSyncStatus('Sincronizando...');
   try {
-    const res = await api({ method: 'GET', query: { action: 'read' } });
+    const res = await api({ method:'GET', query:{ action:'read' } });
     if (!res.ok) throw new Error(res.error);
-    const raw = res.data;
 
-    clientes = (raw.Clientes || []).map((r, i) => ({
+    // NUEVO: leer hoja Clientes
+    clientes = (res.data.Clientes||[]).map((r,i)=>({
       idx: i,
       id: r.ID, nombre: r.Nombre, direccion: r.Direccion,
-      zona: r.Zona, contacto: r.Contacto, activo: r.Activo !== 'false',
+      zona: r.Zona, contacto: r.Contacto,
     }));
 
-    activos = (raw.Activos || []).map(r => ({
-      qr: r.ID_QR, modelo: r.Modelo, estado: r.Estado,
-      clienteId: r.Cliente_ID, clienteNombre: r.Cliente_Nombre,
-      fechaEntrega: r.Fecha_Entrega, ultimoCenso: r.Ultimo_Censo,
-      capacidad: parseInt(r.Capacidad) || 20,
-      comprasMes: parseInt(r.Compras_Mes) || 0,
-      obs: r.Observaciones,
+    activos = (res.data.Activos||[]).map(r=>({
+      qr:r.ID_QR, modelo:r.Modelo, estado:r.Estado, cliente:r.Cliente,
+      fechaEntrega:r.Fecha_Entrega, ultimoCenso:r.Ultimo_Censo,
+      capacidad:parseInt(r.Capacidad)||20, comprasMes:parseInt(r.Compras_Mes)||0, obs:r.Observaciones,
     }));
-
-    movimientos = (raw.Movimientos || []).map(r => ({
-      tipo: r.Tipo, activo: r.Activo_QR,
-      clienteId: r.Cliente_ID, clienteNombre: r.Cliente_Nombre,
-      chofer: r.Responsable, fecha: r.Fecha,
-      failcode: r.Failure_Code, compras: r.Compras_Mes,
+    movimientos = (res.data.Movimientos||[]).map(r=>({
+      tipo:r.Tipo, activo:r.Activo_QR, cliente:r.Cliente, chofer:r.Responsable,
+      fecha:r.Fecha, failcode:r.Failure_Code, compras:r.Compras_Mes,
     }));
-
     renderAll();
-    setSyncStatus('Actualizado ' + new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }));
-  } catch (e) { toast('Error al cargar: ' + e.message, true); setSyncStatus('Error'); }
+    setSyncStatus('Actualizado ' + new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}));
+  } catch(e) { toast('Error al cargar: '+e.message, true); setSyncStatus('Error'); }
   setLoading(false);
 }
 
 async function initSheets() {
-  await api({ method: 'POST', body: { action: 'init' } });
+  await api({ method:'POST', body:{ action:'init' } });
+}
+
+// ── Save activo — sin cambios ─────────────
+async function saveActivo() {
+  const qr=document.getElementById('f-qr').value.trim();
+  const modelo=document.getElementById('f-modelo').value.trim();
+  if (!qr||!modelo){toast('ID y modelo son requeridos.');return;}
+  if (activos.find(a=>a.qr===qr)){toast('Ya existe un activo con ese ID.');return;}
+  const row=[qr,modelo,'Disponible','','',today(),parseInt(document.getElementById('f-cap').value)||20,0,document.getElementById('f-obs-a').value];
+  setLoading(true);
+  try {
+    const res=await api({method:'POST',body:{action:'append',sheet:'Activos',row}});
+    if (!res.ok) throw new Error(res.error);
+    await loadAll(); closeModal('modal-activo');
+    ['f-qr','f-modelo','f-cap','f-anio','f-obs-a'].forEach(id=>document.getElementById(id).value='');
+    toast('Activo registrado ✓');
+  } catch(e){toast('Error: '+e.message,true);}
+  setLoading(false);
+}
+
+// ── Save movimiento — sin cambios (lee f-cli que ahora es hidden) ──
+async function saveMovimiento() {
+  const tipo=document.getElementById('f-tipo').value;
+  const qr=document.getElementById('f-act-id').value;
+  const cli=document.getElementById('f-cli').value;   // hidden, seteado por selectCliente()
+  const chofer=document.getElementById('f-chofer').value.trim()||'Sin registrar';
+  const fecha=document.getElementById('f-fecha').value||today();
+  const fail=document.getElementById('f-fail').value;
+  const compras=parseInt(document.getElementById('f-compras').value)||0;
+  const movRow=[tipo,qr,cli,chofer,fecha,fail,compras];
+  const idx=activos.findIndex(a=>a.qr===qr);
+  let activoRow=null;
+  if (idx>=0) {
+    const a={...activos[idx]};
+    if (tipo==='Entrega'){a.estado='Entregado';a.cliente=cli;a.fechaEntrega=fecha;a.comprasMes=compras;}
+    if (tipo==='Retiro'){a.estado='Disponible';a.cliente='';a.fechaEntrega='';}
+    if (tipo==='Servicio técnico'){a.estado='En Servicio';a.cliente='';}
+    if (tipo==='Alta disponible'){a.estado='Disponible';a.cliente='';}
+    if (tipo==='Baja'){a.estado='Baja';a.cliente='';}
+    activoRow=[a.qr,a.modelo,a.estado,a.cliente,a.fechaEntrega,a.ultimoCenso,a.capacidad,a.comprasMes,a.obs];
+  }
+  setLoading(true);
+  try {
+    await api({method:'POST',body:{action:'append',sheet:'Movimientos',row:movRow}});
+    if (activoRow) await api({method:'POST',body:{action:'update',sheet:'Activos',rowIndex:idx,row:activoRow}});
+    await loadAll(); closeModal('modal-mov');
+    clearClienteSel();
+    toast('Movimiento registrado ✓');
+  } catch(e){toast('Error: '+e.message,true);}
+  setLoading(false);
+}
+
+// ── Censo — sin cambios ──────────────────
+async function guardarCenso(qr) {
+  const idx=activos.findIndex(a=>a.qr===qr);
+  if (idx<0) return;
+  const a=activos[idx];
+  const row=[a.qr,a.modelo,a.estado,a.cliente,a.fechaEntrega,today(),a.capacidad,a.comprasMes,a.obs];
+  const movRow=['Censo',qr,a.cliente,'Preventista',today(),'',''];
+  setLoading(true);
+  try {
+    await api({method:'POST',body:{action:'update',sheet:'Activos',rowIndex:idx,row}});
+    await api({method:'POST',body:{action:'append',sheet:'Movimientos',row:movRow}});
+    await loadAll(); toast('Censo registrado ✓');
+  } catch(e){toast('Error: '+e.message,true);}
+  setLoading(false);
 }
 
 // ════════════════════════════════════════
-//  CLIENTES
+//  NUEVO: Gestión de clientes
 // ════════════════════════════════════════
 
-function openModalCliente(idx = null) {
-  editingClienteIdx = idx;
-  document.getElementById('modal-cli-title').textContent = idx !== null ? 'Editar cliente' : 'Nuevo cliente';
-  if (idx !== null) {
-    const c = clientes[idx];
-    document.getElementById('fc-id').value = c.id;
-    document.getElementById('fc-id').disabled = true;   // no cambiar el ID
-    document.getElementById('fc-nombre').value = c.nombre;
-    document.getElementById('fc-dir').value = c.direccion;
-    document.getElementById('fc-zona').value = c.zona;
-    document.getElementById('fc-tel').value = c.contacto;
+function abrirModalCliente(idx=null) {
+  editingCliIdx = idx;
+  document.getElementById('modal-cli-title').textContent = idx!==null ? 'Editar cliente' : 'Nuevo cliente';
+  if (idx!==null) {
+    const c=clientes[idx];
+    document.getElementById('fc-id').value=c.id;
+    document.getElementById('fc-id').disabled=true;
+    document.getElementById('fc-nombre').value=c.nombre;
+    document.getElementById('fc-dir').value=c.direccion||'';
+    document.getElementById('fc-zona').value=c.zona||'';
+    document.getElementById('fc-tel').value=c.contacto||'';
   } else {
-    ['fc-id','fc-nombre','fc-dir','fc-zona','fc-tel'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('fc-id').disabled = false;
+    ['fc-id','fc-nombre','fc-dir','fc-zona','fc-tel'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('fc-id').disabled=false;
   }
-  showPage('clientes-page', document.querySelectorAll('.nav-item')[2]);
-  const el = document.getElementById('modal-cliente');
+  showPage('clientes',document.querySelectorAll('.nav-item')[2]);
+  const el=document.getElementById('modal-cliente');
   el.classList.add('open');
-  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  el.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 async function saveCliente() {
-  const id     = document.getElementById('fc-id').value.trim();
-  const nombre = document.getElementById('fc-nombre').value.trim();
-  if (!id || !nombre) { toast('Código y nombre son requeridos.'); return; }
-
-  const row = [
-    id, nombre,
+  const id=document.getElementById('fc-id').value.trim();
+  const nombre=document.getElementById('fc-nombre').value.trim();
+  if (!id||!nombre){toast('Código y nombre son requeridos.');return;}
+  const row=[id,nombre,
     document.getElementById('fc-dir').value.trim(),
     document.getElementById('fc-zona').value.trim(),
     document.getElementById('fc-tel').value.trim(),
-    'true',
-  ];
-
+    'true'];
   setLoading(true);
   try {
-    if (editingClienteIdx !== null) {
-      await api({ method: 'POST', body: { action: 'update', sheet: 'Clientes', rowIndex: editingClienteIdx, row } });
+    if (editingCliIdx!==null) {
+      await api({method:'POST',body:{action:'update',sheet:'Clientes',rowIndex:editingCliIdx,row}});
       toast('Cliente actualizado ✓');
     } else {
-      if (clientes.find(c => c.id === id)) { toast('Ya existe un cliente con ese código.'); setLoading(false); return; }
-      await api({ method: 'POST', body: { action: 'append', sheet: 'Clientes', row } });
+      if (clientes.find(c=>c.id===id)){toast('Ya existe un cliente con ese código.');setLoading(false);return;}
+      await api({method:'POST',body:{action:'append',sheet:'Clientes',row}});
       toast('Cliente registrado ✓');
     }
     await loadAll();
     closeModal('modal-cliente');
-  } catch (e) { toast('Error: ' + e.message, true); }
+  } catch(e){toast('Error: '+e.message,true);}
   setLoading(false);
-}
-
-function renderClientes() {
-  const q = (document.getElementById('search-cli').value || '').toLowerCase();
-  const list = clientes.filter(c =>
-    !q || c.id.toLowerCase().includes(q) || c.nombre.toLowerCase().includes(q) ||
-    (c.zona || '').toLowerCase().includes(q)
-  );
-  const cont = document.getElementById('clientes-list');
-  if (!list.length) { cont.innerHTML = '<div class="empty-state">Sin clientes registrados. Agregá el primero con "+ Nuevo cliente".</div>'; return; }
-
-  const heladeras = {};
-  activos.filter(a => a.estado === 'Entregado').forEach(a => {
-    heladeras[a.clienteId] = (heladeras[a.clienteId] || 0) + 1;
-  });
-
-  cont.innerHTML = list.map(c => {
-    const initials = c.nombre.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
-    const hels = heladeras[c.id] || 0;
-    return `<div class="client-card">
-      <div class="client-avatar">${initials}</div>
-      <div class="client-info">
-        <div class="client-name">${c.nombre} <span class="qr-tag" style="margin-left:4px">${c.id}</span></div>
-        <div class="client-meta">
-          ${c.direccion ? `<span>📍 ${c.direccion}</span>` : ''}
-          ${c.zona ? `<span>🗺 ${c.zona}</span>` : ''}
-          ${c.contacto ? `<span>📞 ${c.contacto}</span>` : ''}
-          <span style="color:var(--blue-600)">🧊 ${hels} heladera${hels !== 1 ? 's' : ''}</span>
-        </div>
-      </div>
-      <div class="client-actions">
-        <button class="btn btn-sm" onclick="openModalCliente(${c.idx})">Editar</button>
-      </div>
-    </div>`;
-  }).join('');
 }
 
 // ── Autocomplete cliente en modal movimiento ──
-function filterClienteAC(q) {
-  const list = document.getElementById('ac-list');
-  const matches = clientes.filter(c =>
-    c.nombre.toLowerCase().includes(q.toLowerCase()) ||
+function filtrarAC(q) {
+  const list=document.getElementById('ac-list');
+  const matches=clientes.filter(c=>
+    c.nombre.toLowerCase().includes(q.toLowerCase())||
     c.id.toLowerCase().includes(q.toLowerCase())
-  ).slice(0, 8);
-
-  let html = matches.map(c => `
+  ).slice(0,8);
+  list.innerHTML=matches.map(c=>`
     <div class="ac-item" onmousedown="selectCliente('${c.id}')">
       <span>${c.nombre}</span><span class="ac-id">${c.id}</span>
-      <div class="ac-sub">${[c.zona, c.direccion].filter(Boolean).join(' · ')}</div>
+      <div class="ac-sub">${[c.zona,c.direccion].filter(Boolean).join(' · ')}</div>
     </div>`).join('');
-
-  list.innerHTML = html;
-  list.classList.toggle('open', matches.length > 0 || q.length > 0);
+  list.classList.toggle('open', matches.length>0);
 }
 
 function selectCliente(id) {
-  const c = clientes.find(x => x.id === id);
+  const c=clientes.find(x=>x.id===id);
   if (!c) return;
-  selectedClienteId = c.id;
-  document.getElementById('sc-name').textContent = c.nombre;
-  document.getElementById('sc-sub').textContent = [c.id, c.zona, c.direccion].filter(Boolean).join(' · ');
-  document.getElementById('selected-client-display').style.display = 'block';
-  document.getElementById('client-search-wrap').style.display = 'none';
-  closeAC();
+  document.getElementById('f-cli').value=c.nombre;   // guarda el nombre en el hidden (compatible con Sheet)
+  document.getElementById('sel-client-name').textContent=c.nombre;
+  document.getElementById('sel-client-sub').textContent=[c.id,c.zona,c.direccion].filter(Boolean).join(' · ');
+  document.getElementById('sel-client-display').style.display='block';
+  document.getElementById('cli-ac-wrap').style.display='none';
+  cerrarAC();
 }
 
-function clearClienteSelection() {
-  selectedClienteId = null;
-  document.getElementById('selected-client-display').style.display = 'none';
-  document.getElementById('client-search-wrap').style.display = 'block';
-  document.getElementById('f-cli-search').value = '';
+function clearClienteSel() {
+  document.getElementById('f-cli').value='';
+  document.getElementById('f-cli-search').value='';
+  document.getElementById('sel-client-display').style.display='none';
+  document.getElementById('cli-ac-wrap').style.display='block';
 }
 
-function closeAC() { document.getElementById('ac-list').classList.remove('open'); }
-
-function populateChecklistSelect() {
-  const clis = [...new Set(activos.filter(a => a.estado === 'Entregado').map(a => a.clienteId).filter(Boolean))];
-  const sel = document.getElementById('cli-sel');
-  const prev = sel.value;
-  sel.innerHTML = '<option value="">Seleccionar cliente...</option>' +
-    clis.map(id => {
-      const c = clientes.find(x => x.id === id);
-      return `<option value="${id}">${c ? c.nombre : id}</option>`;
-    }).join('');
-  sel.value = prev;
-}
+function cerrarAC(){document.getElementById('ac-list').classList.remove('open');}
 
 // ════════════════════════════════════════
-//  ACTIVOS
-// ════════════════════════════════════════
-
-async function saveActivo() {
-  const qr     = document.getElementById('f-qr').value.trim();
-  const modelo = document.getElementById('f-modelo').value.trim();
-  if (!qr || !modelo) { toast('ID y modelo son requeridos.'); return; }
-  if (activos.find(a => a.qr === qr)) { toast('Ya existe un activo con ese ID.'); return; }
-  const row = [qr, modelo, 'Disponible', '', '', today(),
-    parseInt(document.getElementById('f-cap').value) || 20, 0,
-    document.getElementById('f-obs-a').value];
-  // Nota: Activos ahora tiene 10 columnas (agregamos Cliente_ID y Cliente_Nombre separados)
-  const fullRow = [qr, modelo, 'Disponible', '', '', '', today(),
-    parseInt(document.getElementById('f-cap').value) || 20, 0,
-    document.getElementById('f-obs-a').value];
-  setLoading(true);
-  try {
-    await api({ method: 'POST', body: { action: 'append', sheet: 'Activos', row: fullRow } });
-    await loadAll(); closeModal('modal-activo');
-    ['f-qr','f-modelo','f-cap','f-anio','f-obs-a'].forEach(id => document.getElementById(id).value = '');
-    toast('Activo registrado ✓');
-  } catch (e) { toast('Error: ' + e.message, true); }
-  setLoading(false);
-}
-
-// ════════════════════════════════════════
-//  MOVIMIENTOS
-// ════════════════════════════════════════
-
-async function saveMovimiento() {
-  const tipo    = document.getElementById('f-tipo').value;
-  const qr      = document.getElementById('f-act-id').value;
-  const chofer  = document.getElementById('f-chofer').value.trim() || 'Sin registrar';
-  const fecha   = document.getElementById('f-fecha').value || today();
-  const fail    = document.getElementById('f-fail').value;
-  const compras = parseInt(document.getElementById('f-compras').value) || 0;
-
-  const cli = selectedClienteId ? clientes.find(c => c.id === selectedClienteId) : null;
-  const cliId     = cli ? cli.id : '';
-  const cliNombre = cli ? cli.nombre : '';
-
-  const movRow = [tipo, qr, cliId, cliNombre, chofer, fecha, fail, compras];
-  const idx = activos.findIndex(a => a.qr === qr);
-  let activoRow = null;
-  if (idx >= 0) {
-    const a = { ...activos[idx] };
-    if (tipo === 'Entrega')          { a.estado = 'Entregado'; a.clienteId = cliId; a.clienteNombre = cliNombre; a.fechaEntrega = fecha; a.comprasMes = compras; }
-    if (tipo === 'Retiro')           { a.estado = 'Disponible'; a.clienteId = ''; a.clienteNombre = ''; a.fechaEntrega = ''; }
-    if (tipo === 'Servicio técnico') { a.estado = 'En Servicio'; a.clienteId = ''; a.clienteNombre = ''; }
-    if (tipo === 'Alta disponible')  { a.estado = 'Disponible'; a.clienteId = ''; a.clienteNombre = ''; }
-    if (tipo === 'Baja')             { a.estado = 'Baja'; a.clienteId = ''; a.clienteNombre = ''; }
-    activoRow = [a.qr, a.modelo, a.estado, a.clienteId, a.clienteNombre, a.fechaEntrega, a.ultimoCenso, a.capacidad, a.comprasMes, a.obs];
-  }
-
-  setLoading(true);
-  try {
-    await api({ method: 'POST', body: { action: 'append', sheet: 'Movimientos', row: movRow } });
-    if (activoRow) await api({ method: 'POST', body: { action: 'update', sheet: 'Activos', rowIndex: idx, row: activoRow } });
-    await loadAll(); closeModal('modal-mov'); clearClienteSelection();
-    toast('Movimiento registrado ✓');
-  } catch (e) { toast('Error: ' + e.message, true); }
-  setLoading(false);
-}
-
-// ── Censo ────────────────────────────────
-async function guardarCenso(qr) {
-  const idx = activos.findIndex(a => a.qr === qr);
-  if (idx < 0) return;
-  const a = activos[idx];
-  const row = [a.qr, a.modelo, a.estado, a.clienteId, a.clienteNombre, a.fechaEntrega, today(), a.capacidad, a.comprasMes, a.obs];
-  const movRow = ['Censo', qr, a.clienteId, a.clienteNombre, 'Preventista', today(), '', ''];
-  setLoading(true);
-  try {
-    await api({ method: 'POST', body: { action: 'update', sheet: 'Activos', rowIndex: idx, row } });
-    await api({ method: 'POST', body: { action: 'append', sheet: 'Movimientos', row: movRow } });
-    await loadAll(); toast('Censo registrado ✓');
-  } catch (e) { toast('Error: ' + e.message, true); }
-  setLoading(false);
-}
-
-// ════════════════════════════════════════
-//  IMPORTAR COMPRAS
+//  IMPORTAR COMPRAS — sin cambios
 // ════════════════════════════════════════
 
 function handleDrop(e) {
-  e.preventDefault(); document.getElementById('drop-zone').classList.remove('over');
-  const f = e.dataTransfer.files[0]; if (f) handleFile(f);
+  e.preventDefault();
+  document.getElementById('drop-zone').classList.remove('over');
+  const f = e.dataTransfer.files[0];
+  if (f) handleFile(f);
 }
+
 function handleFile(file) {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = e => parseCSV(e.target.result, file.name);
   reader.readAsText(file, 'UTF-8');
 }
+
 function parseCSV(text, filename) {
   const sample = text.split('\n')[0];
   const sep = sample.includes(';') ? ';' : sample.includes('\t') ? '\t' : ',';
-  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-  if (lines.length < 2) { toast('El archivo parece vacío.', true); return; }
-  csvHeaders = lines[0].split(sep).map(h => h.replace(/^"|"$/g, '').trim());
+  const lines = text.split('\n').map(l=>l.trim()).filter(Boolean);
+  if (lines.length < 2) { toast('El archivo parece vacío o con una sola fila.', true); return; }
+  csvHeaders = lines[0].split(sep).map(h=>h.replace(/^"|"$/g,'').trim());
   csvRows = lines.slice(1).map(line => {
-    const vals = line.split(sep).map(v => v.replace(/^"|"$/g, '').trim());
-    return Object.fromEntries(csvHeaders.map((h, i) => [h, vals[i] || '']));
+    const vals = line.split(sep).map(v=>v.replace(/^"|"$/g,'').trim());
+    return Object.fromEntries(csvHeaders.map((h,i)=>[h, vals[i]||'']));
   });
-  const opts = csvHeaders.map(h => `<option value="${h}">${h}</option>`).join('');
-  ['map-cliente','map-cantidad'].forEach(id => document.getElementById(id).innerHTML = opts);
+  const opts = csvHeaders.map(h=>`<option value="${h}">${h}</option>`).join('');
+  ['map-cliente','map-cantidad'].forEach(id=>{ document.getElementById(id).innerHTML = opts; });
   document.getElementById('map-periodo').innerHTML = '<option value="">— no incluir —</option>' + opts;
   autoDetect('map-cliente', ['cliente','client','nombre','name','cod','codigo','code','id']);
   autoDetect('map-cantidad', ['cantidad','cant','bultos','unidades','units','qty','total','compras','ventas']);
-  document.getElementById('file-info').textContent = `📄 ${filename} — ${csvRows.length} registros, ${csvHeaders.length} columnas`;
-  goStep(2); updatePreview();
-}
-function autoDetect(selectId, keywords) {
-  const sel = document.getElementById(selectId);
-  const match = csvHeaders.find(h => keywords.some(k => h.toLowerCase().includes(k)));
-  if (match) sel.value = match;
-}
-function setUnit(u) {
-  csvUnit = u;
-  document.getElementById('unit-bultos').classList.toggle('active', u === 'bultos');
-  document.getElementById('unit-unidades').classList.toggle('active', u === 'unidades');
-  document.getElementById('conversion-wrap').style.display = u === 'bultos' ? 'flex' : 'none';
+  document.getElementById('file-info').textContent =
+    `📄 ${filename} — ${csvRows.length} registros, ${csvHeaders.length} columnas. Separador: "${sep==='\t'?'tabulación':sep}"`;
+  goStep(2);
   updatePreview();
 }
-function updatePreview() {}
+
+function autoDetect(selectId, keywords) {
+  const sel = document.getElementById(selectId);
+  const match = csvHeaders.find(h => keywords.some(k=>h.toLowerCase().includes(k)));
+  if (match) sel.value = match;
+}
+
+function setUnit(u) {
+  csvUnit = u;
+  document.getElementById('unit-bultos').classList.toggle('active', u==='bultos');
+  document.getElementById('unit-unidades').classList.toggle('active', u==='unidades');
+  document.getElementById('conversion-wrap').style.display = u==='bultos' ? 'flex' : 'none';
+  updatePreview();
+}
+
+function updatePreview() {
+  const upb = parseInt(document.getElementById('unid-por-bulto').value)||12;
+  const hint = document.getElementById('conversion-hint');
+  if (csvUnit==='bultos') {
+    hint.textContent = `→ se divide por ${upb} para obtener cajones`;
+  } else {
+    hint.style.display='none';
+  }
+}
 
 function showPreview() {
-  const colCliente  = document.getElementById('map-cliente').value;
+  const colCliente = document.getElementById('map-cliente').value;
   const colCantidad = document.getElementById('map-cantidad').value;
-  if (!colCliente || !colCantidad) { toast('Seleccioná las columnas requeridas.'); return; }
-  const upb = parseInt(document.getElementById('unid-por-bulto').value) || 12;
-
-  // Mapeo: ID de cliente o nombre → cliente
+  if (!colCliente||!colCantidad) { toast('Seleccioná al menos las columnas de cliente y cantidad.'); return; }
+  const upb = parseInt(document.getElementById('unid-por-bulto').value)||12;
+  const clientesConActivo = new Set(activos.filter(a=>a.estado==='Entregado').map(a=>a.cliente.toLowerCase().trim()));
   const agrupado = {};
   csvRows.forEach(row => {
-    const key = (row[colCliente] || '').trim();
-    const raw = parseFloat((row[colCantidad] || '0').replace(',', '.')) || 0;
-    const cajones = csvUnit === 'bultos' ? raw / upb : raw;
-    if (!key) return;
-    agrupado[key] = (agrupado[key] || 0) + cajones;
+    const cli = (row[colCliente]||'').trim();
+    const raw = parseFloat((row[colCantidad]||'0').replace(',','.')) || 0;
+    const cajones = csvUnit==='bultos' ? raw/upb : raw;
+    if (!cli) return;
+    agrupado[cli] = (agrupado[cli]||0) + cajones;
   });
-
-  // Intentar matchear con clientes: por ID o por nombre (case-insensitive)
-  const resolveCliente = key => {
-    const byId   = clientes.find(c => c.id.toLowerCase() === key.toLowerCase());
-    if (byId) return byId;
-    const byName = clientes.find(c => c.nombre.toLowerCase() === key.toLowerCase());
-    return byName || null;
-  };
-
   const entries = Object.entries(agrupado);
-  const matched   = entries.filter(([k]) => resolveCliente(k));
-  const noMatch   = entries.filter(([k]) => !resolveCliente(k));
-
-  document.getElementById('prev-head').innerHTML = '<tr><th>Clave en CSV</th><th>Cliente encontrado</th><th>Cajones</th><th>Estado</th></tr>';
-  document.getElementById('prev-body').innerHTML = entries.slice(0, 15).map(([key, caj]) => {
-    const c = resolveCliente(key);
-    return `<tr>
-      <td>${key}</td>
-      <td>${c ? c.nombre : '—'}</td>
-      <td>${Math.round(caj * 10) / 10}</td>
-      <td class="${c ? 'match' : 'no-match'}">${c ? '✓ Encontrado' : '✗ Sin coincidencia'}</td>
-    </tr>`;
+  const matched = entries.filter(([cli])=>clientesConActivo.has(cli.toLowerCase()));
+  const noMatch = entries.filter(([cli])=>!clientesConActivo.has(cli.toLowerCase()));
+  document.getElementById('prev-head').innerHTML = `<tr><th>Cliente (en CSV)</th><th>Cajones calculados</th><th>Coincidencia</th></tr>`;
+  document.getElementById('prev-body').innerHTML = entries.slice(0,15).map(([cli,caj])=>{
+    const ok = clientesConActivo.has(cli.toLowerCase());
+    return `<tr><td>${cli}</td><td>${Math.round(caj*10)/10}</td><td class="${ok?'match':'no-match'}">${ok?'✓ Encontrado':'✗ Sin activo entregado'}</td></tr>`;
   }).join('');
-
   document.getElementById('preview-info').textContent =
-    `${entries.length} clientes en el CSV — ${matched.length} serán actualizados.`;
+    `${entries.length} clientes en el CSV — ${matched.length} con activos entregados serán actualizados.`;
   const warnEl = document.getElementById('preview-warn');
   if (noMatch.length) {
-    warnEl.style.display = 'block';
-    warnEl.textContent = `${noMatch.length} sin coincidencia (ignorados): ${noMatch.slice(0, 4).map(([k]) => k).join(', ')}${noMatch.length > 4 ? '...' : ''}`;
-  } else { warnEl.style.display = 'none'; }
-
-  window._importData = { agrupado, resolveCliente, upb };
+    warnEl.style.display='block';
+    warnEl.textContent = `${noMatch.length} clientes del CSV no tienen heladeras entregadas y serán ignorados: ${noMatch.slice(0,4).map(([c])=>c).join(', ')}${noMatch.length>4?'...':''}`;
+  } else { warnEl.style.display='none'; }
+  window._importData = { agrupado, colCliente, colCantidad, upb, clientesConActivo };
   goStep(3);
 }
 
 async function applyImport() {
-  const { agrupado, resolveCliente } = window._importData;
+  const { agrupado, clientesConActivo } = window._importData;
   const periodo = (() => {
     const col = document.getElementById('map-periodo').value;
     if (!col) return today();
-    const vals = [...new Set(csvRows.map(r => r[col]).filter(Boolean))];
-    return vals.length === 1 ? vals[0] : today();
+    const vals = [...new Set(csvRows.map(r=>r[col]).filter(Boolean))];
+    return vals.length===1 ? vals[0] : today();
   })();
-
   const updates = [];
   activos.forEach((a, idx) => {
-    if (a.estado !== 'Entregado' || !a.clienteId) return;
-    const match = Object.entries(agrupado).find(([k]) => {
-      const c = resolveCliente(k);
-      return c && c.id === a.clienteId;
-    });
+    if (a.estado !== 'Entregado') return;
+    const cliKey = a.cliente.toLowerCase().trim();
+    if (!clientesConActivo.has(cliKey)) return;
+    const match = Object.entries(agrupado).find(([k])=>k.toLowerCase()===cliKey);
     if (!match) return;
-    const cajones = Math.round(match[1] * 10) / 10;
-    updates.push({ idx, cajones });
+    updates.push({ idx, cajones: Math.round(match[1]*10)/10, cliente: a.cliente });
   });
-
   if (!updates.length) { toast('Sin coincidencias para actualizar.', true); return; }
   setLoading(true);
-  let ok = 0, errs = 0;
-  for (const u of updates) {
-    const a = activos[u.idx];
-    const row = [a.qr, a.modelo, a.estado, a.clienteId, a.clienteNombre, a.fechaEntrega, a.ultimoCenso, a.capacidad, u.cajones, a.obs];
-    const movRow = ['Actualización compras', a.qr, a.clienteId, a.clienteNombre, 'Importación CSV', periodo, '', u.cajones];
-    try {
-      await api({ method: 'POST', body: { action: 'update', sheet: 'Activos', rowIndex: u.idx, row } });
-      await api({ method: 'POST', body: { action: 'append', sheet: 'Movimientos', row: movRow } });
-      ok++;
-    } catch (e) { errs++; }
-  }
-  await loadAll();
-  document.getElementById('result-title').textContent = `${ok} activos actualizados correctamente`;
-  document.getElementById('result-sub').textContent = `Período: ${periodo}.${errs ? ' ' + errs + ' errores.' : ''}`;
-  goStep(4);
+  let ok=0, err=0;
+  try {
+    for (const u of updates) {
+      const a = activos[u.idx];
+      const row = [a.qr,a.modelo,a.estado,a.cliente,a.fechaEntrega,a.ultimoCenso,a.capacidad,u.cajones,a.obs];
+      const movRow = ['Actualización compras', a.qr, a.cliente, 'Importación CSV', periodo, '', u.cajones];
+      try {
+        await api({method:'POST',body:{action:'update',sheet:'Activos',rowIndex:u.idx,row}});
+        await api({method:'POST',body:{action:'append',sheet:'Movimientos',row:movRow}});
+        ok++;
+      } catch(e) { err++; }
+    }
+    await loadAll();
+    document.getElementById('result-title').textContent = `${ok} activos actualizados correctamente`;
+    document.getElementById('result-sub').textContent =
+      `Las compras del período ${periodo} fueron aplicadas.${err>0?' '+err+' errores.':''}`;
+    goStep(4);
+  } catch(e) { toast('Error en importación: '+e.message, true); }
   setLoading(false);
 }
 
-function goStep(n) { [1,2,3,4].forEach(i => document.getElementById('step'+i).style.display = i===n?'block':'none'); }
+function goStep(n) {
+  [1,2,3,4].forEach(i => { document.getElementById('step'+i).style.display = i===n?'block':'none'; });
+}
+
 function resetImport() {
   csvRows=[]; csvHeaders=[]; csvUnit='bultos';
   document.getElementById('csv-input').value='';
@@ -860,70 +795,66 @@ function resetImport() {
   goStep(1);
 }
 
-// ════════════════════════════════════════
-//  RENDER
-// ════════════════════════════════════════
-
+// ── Render — sin cambios salvo renderClientes ──
 function hasAlert(a) {
-  if (a.estado !== 'Entregado') return false;
-  if (daysSince(a.ultimoCenso) > MAX_DIAS_CENSO) return `Sin censo hace +${MAX_DIAS_CENSO} días`;
-  if (a.comprasMes < MIN_CAJONES) return `Compras bajo mínimo (${a.comprasMes} caj/mes)`;
+  if (a.estado==='Baja') return false;
+  if (a.estado!=='Entregado') return false;
+  if (daysSince(a.ultimoCenso)>MAX_DIAS_CENSO) return `Sin censo hace +${MAX_DIAS_CENSO} días`;
+  if (a.comprasMes<MIN_CAJONES) return `Compras bajo mínimo (${a.comprasMes} caj/mes)`;
   return false;
 }
+
 function badgeEstado(e) {
   const m={Disponible:'b-dis',Entregado:'b-ent','En Servicio':'b-srv',Baja:'b-baj'};
   return `<span class="badge ${m[e]||'b-baj'}">${e}</span>`;
 }
-function prodBar(c, cap) {
+
+function prodBar(c,cap) {
   const pct=Math.min(100,Math.round((c/cap)*100));
   const cls=pct>=80?'pg':pct>=50?'pw':'pb';
   return `<div class="prod-wrap"><div class="prod-bar"><div class="prod-fill ${cls}" style="width:${pct}%"></div></div><span style="font-size:11px;color:var(--text3)">${pct}%</span></div>`;
 }
+
 function dotCls(t) {
   if (t==='Entrega') return 'de'; if (t==='Retiro'||t==='Baja') return 'dr';
   if (t&&t.includes('ervicio')) return 'ds'; return 'dc';
 }
+
 function tlItem(m) {
-  const nombre = m.clienteNombre || m.clienteId || 'Sin cliente';
-  return `<div class="tl-item"><div class="tl-dot ${dotCls(m.tipo)}"></div><div>
-    <div class="tl-title">${m.tipo} — <span class="qr-tag">${m.activo}</span></div>
-    <div class="tl-sub">${nombre} · ${m.chofer} · ${m.fecha}${m.failcode?' · '+m.failcode:''}</div>
-  </div></div>`;
+  return `<div class="tl-item"><div class="tl-dot ${dotCls(m.tipo)}"></div><div><div class="tl-title">${m.tipo} — <span class="qr-tag">${m.activo}</span></div><div class="tl-sub">${m.cliente||'Sin cliente'} · ${m.chofer} · ${m.fecha}${m.failcode?' · '+m.failcode:''}</div></div></div>`;
 }
 
 function renderDashboard() {
-  const alts = activos.filter(a => hasAlert(a));
-  document.getElementById('m-total').textContent = activos.length;
-  document.getElementById('m-ent').textContent = activos.filter(a=>a.estado==='Entregado').length;
-  document.getElementById('m-srv').textContent = activos.filter(a=>a.estado==='En Servicio').length;
-  document.getElementById('m-alt').textContent = alts.length;
-  const banner = document.getElementById('alert-banner');
+  const alts=activos.filter(a=>hasAlert(a));
+  document.getElementById('m-total').textContent=activos.length;
+  document.getElementById('m-ent').textContent=activos.filter(a=>a.estado==='Entregado').length;
+  document.getElementById('m-srv').textContent=activos.filter(a=>a.estado==='En Servicio').length;
+  document.getElementById('m-alt').textContent=alts.length;
+  const banner=document.getElementById('alert-banner');
   alts.length ? banner.classList.add('on') : banner.classList.remove('on');
-  if (alts.length) document.getElementById('alert-text').textContent = `${alts.length} activo(s) requieren atención.`;
-  const tb = document.getElementById('dash-alerts');
-  tb.innerHTML = alts.length
-    ? alts.map(a=>`<tr class="alert-row"><td><span class="qr-tag">${a.qr}</span></td><td>${a.modelo}</td><td>${a.clienteNombre||'—'}</td><td><span class="badge b-alt">${hasAlert(a)}</span></td><td>${a.ultimoCenso||'—'}</td></tr>`).join('')
+  if (alts.length) document.getElementById('alert-text').textContent=`${alts.length} activo(s) requieren atención.`;
+  const tb=document.getElementById('dash-alerts');
+  tb.innerHTML=alts.length
+    ? alts.map(a=>`<tr class="alert-row"><td><span class="qr-tag">${a.qr}</span></td><td>${a.modelo}</td><td>${a.cliente||'—'}</td><td><span class="badge b-alt">${hasAlert(a)}</span></td><td>${a.ultimoCenso||'—'}</td></tr>`).join('')
     : '<tr><td colspan="5" class="empty-state">Sin alertas activas ✓</td></tr>';
-  const tl = document.getElementById('dash-tl');
-  const last = [...movimientos].reverse().slice(0, 6);
-  tl.innerHTML = last.length ? last.map(tlItem).join('') : '<div class="empty-state">Sin movimientos aún.</div>';
+  const tl=document.getElementById('dash-tl');
+  const last=[...movimientos].reverse().slice(0,6);
+  tl.innerHTML=last.length?last.map(tlItem).join(''):'<div class="empty-state">Sin movimientos aún.</div>';
 }
 
 function renderActivos() {
-  const q = (document.getElementById('search-a').value||'').toLowerCase();
-  const list = activos.filter(a => {
+  const q=(document.getElementById('search-a').value||'').toLowerCase();
+  const list=activos.filter(a=>{
     if (activoFilter!=='todos'&&a.estado!==activoFilter) return false;
-    if (q&&!a.qr.toLowerCase().includes(q)&&!a.modelo.toLowerCase().includes(q)&&
-        !(a.clienteNombre||'').toLowerCase().includes(q)&&!(a.clienteId||'').toLowerCase().includes(q)) return false;
+    if (q&&!a.qr.toLowerCase().includes(q)&&!a.modelo.toLowerCase().includes(q)&&!(a.cliente||'').toLowerCase().includes(q)) return false;
     return true;
   });
-  document.getElementById('activos-body').innerHTML = list.length
-    ? list.map(a => {
-        const al = hasAlert(a);
+  document.getElementById('activos-body').innerHTML=list.length
+    ? list.map(a=>{
+        const al=hasAlert(a);
         return `<tr ${al?'class="alert-row"':''}>
           <td><span class="qr-tag">${a.qr}</span></td><td>${a.modelo}</td>
-          <td>${badgeEstado(a.estado)}</td>
-          <td>${a.clienteNombre||'—'}${a.clienteId?` <span class="qr-tag">${a.clienteId}</span>`:''}</td>
+          <td>${badgeEstado(a.estado)}</td><td>${a.cliente||'—'}</td>
           <td>${a.fechaEntrega||'—'}</td>
           <td>${a.ultimoCenso||'—'} ${al?`<span class="badge b-alt" style="font-size:10px;margin-left:4px">!</span>`:''}</td>
           <td>${a.estado==='Entregado'?prodBar(a.comprasMes,a.capacidad):'—'}</td>
@@ -933,20 +864,54 @@ function renderActivos() {
     : '<tr><td colspan="8" class="empty-state">Sin resultados.</td></tr>';
 }
 
-function renderClientesPanel() { renderClientes(); }
+// NUEVO: renderClientes con tarjetas en lugar de tabla derivada de activos
+function renderClientes() {
+  const q=(document.getElementById('search-cli').value||'').toLowerCase();
+  const list=clientes.filter(c=>
+    !q || c.nombre.toLowerCase().includes(q) ||
+    c.id.toLowerCase().includes(q) ||
+    (c.zona||'').toLowerCase().includes(q)
+  );
+  const cont=document.getElementById('clientes-list');
+  if (!list.length) {
+    cont.innerHTML='<div class="empty-state">Sin clientes registrados. Usá "+ Nuevo cliente" para agregar.</div>';
+    return;
+  }
+  const helsMap={};
+  activos.filter(a=>a.estado==='Entregado').forEach(a=>{
+    helsMap[a.cliente]=(helsMap[a.cliente]||0)+1;
+  });
+  cont.innerHTML=list.map(c=>{
+    const initials=c.nombre.split(' ').slice(0,2).map(w=>w[0]||'').join('').toUpperCase();
+    const hels=helsMap[c.nombre]||0;
+    return `<div class="client-card">
+      <div class="client-avatar">${initials}</div>
+      <div class="client-info">
+        <div class="client-name">${c.nombre} <span class="qr-tag" style="margin-left:4px">${c.id}</span></div>
+        <div class="client-meta">
+          ${c.direccion?`<span>📍 ${c.direccion}</span>`:''}
+          ${c.zona?`<span>🗺 ${c.zona}</span>`:''}
+          ${c.contacto?`<span>📞 ${c.contacto}</span>`:''}
+          <span style="color:var(--blue-600)">🧊 ${hels} heladera${hels!==1?'s':''}</span>
+        </div>
+      </div>
+      <button class="btn btn-sm" onclick="abrirModalCliente(${c.idx})">Editar</button>
+    </div>`;
+  }).join('');
+}
 
 function renderMovimientos() {
-  document.getElementById('all-mov').innerHTML =
-    [...movimientos].reverse().map(tlItem).join('') || '<div class="empty-state">Sin movimientos.</div>';
+  const el=document.getElementById('all-mov');
+  el.innerHTML=[...movimientos].reverse().map(tlItem).join('')||'<div class="empty-state">Sin movimientos.</div>';
 }
 
 function renderChecklist() {
-  const cliId = document.getElementById('cli-sel').value;
-  const cont  = document.getElementById('checklist-content');
-  if (!cliId) { cont.innerHTML='<div class="empty-state">Seleccioná un cliente.</div>'; return; }
-  const hels = activos.filter(a=>a.estado==='Entregado'&&a.clienteId===cliId);
-  if (!hels.length) { cont.innerHTML='<div class="empty-state">Sin heladeras activas.</div>'; return; }
-  cont.innerHTML = hels.map((a,i)=>`
+  const sel=document.getElementById('cli-sel').value;
+  const cont=document.getElementById('checklist-content');
+  if (!sel){cont.innerHTML='<div class="empty-state">Seleccioná un cliente.</div>';return;}
+  const hels=activos.filter(a=>a.estado==='Entregado'&&a.cliente===sel);
+  if (!hels.length){cont.innerHTML='<div class="empty-state">Sin heladeras activas para este cliente.</div>';return;}
+  cont.innerHTML=hels.map((a,i)=>`
     <div style="margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)">
       <div style="font-weight:500;font-size:13px;margin-bottom:10px"><span class="qr-tag">${a.qr}</span> — ${a.modelo}</div>
       ${['Heladera presente en el local','Solo productos de la marca','Encendida y funcionando'].map((item,j)=>`
@@ -960,7 +925,7 @@ function renderChecklist() {
     </div>`).join('');
 }
 
-function confirmarCenso(qr, idx) {
+function confirmarCenso(qr,idx) {
   if (![0,1,2].every(j=>document.getElementById(`cc-${idx}-${j}`)?.classList.contains('on'))) {
     toast('Completá los 3 ítems antes de confirmar.'); return;
   }
@@ -968,76 +933,82 @@ function confirmarCenso(qr, idx) {
 }
 
 function irChecklist(qr) {
-  const a = activos.find(x=>x.qr===qr);
-  if (!a||!a.clienteId) return;
-  showPage('checklist', document.querySelectorAll('.nav-item')[6]);
-  document.getElementById('cli-sel').value = a.clienteId;
+  const a=activos.find(x=>x.qr===qr);
+  if (!a||!a.cliente) return;
+  showPage('checklist',document.querySelectorAll('.nav-item')[4]);
+  document.getElementById('cli-sel').value=a.cliente;
   renderChecklist();
 }
 
 function renderAll() {
-  renderDashboard(); renderActivos(); renderClientes();
-  renderMovimientos(); populateChecklistSelect();
-  // Actualizar selector activos en modal
-  document.getElementById('f-act-id').innerHTML =
-    activos.map(a=>`<option value="${a.qr}">${a.qr} — ${a.modelo} (${a.estado})</option>`).join('');
+  renderDashboard();renderActivos();renderClientes();renderMovimientos();populateSelects();
 }
 
-// ── UI helpers ───────────────────────────
-function showPage(id, navEl) {
+// MODIFICADO: populateSelects ya no toca f-cli (ahora es hidden)
+function populateSelects() {
+  // checklist dropdown: nombres de clientes con heladeras entregadas
+  const clis=[...new Set(activos.filter(a=>a.estado==='Entregado').map(a=>a.cliente).filter(Boolean))];
+  const cliSel=document.getElementById('cli-sel');
+  const prev=cliSel.value;
+  cliSel.innerHTML='<option value="">Seleccionar cliente...</option>'+clis.map(c=>`<option>${c}</option>`).join('');
+  cliSel.value=prev;
+  // activos dropdown
+  document.getElementById('f-act-id').innerHTML=activos.map(a=>`<option value="${a.qr}">${a.qr} — ${a.modelo} (${a.estado})</option>`).join('');
+}
+
+// ── UI helpers — sin cambios ─────────────
+function showPage(id,navEl) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if (navEl) navEl.classList.add('active');
-  const titles={dashboard:'Dashboard','clientes-page':'Clientes',activos:'Activos',movimientos:'Movimientos',checklist:'Checklist de preventa',compras:'Importar compras'};
-  document.getElementById('page-title').textContent = titles[id]||id;
+  const titles={dashboard:'Dashboard',activos:'Activos',clientes:'Clientes',movimientos:'Movimientos',checklist:'Checklist de preventa',compras:'Importar compras'};
+  document.getElementById('page-title').textContent=titles[id]||id;
 }
 
 function openModal(id) {
-  document.getElementById('f-fecha') && (document.getElementById('f-fecha').value = today());
-  document.getElementById('f-act-id').innerHTML =
-    activos.map(a=>`<option value="${a.qr}">${a.qr} — ${a.modelo} (${a.estado})</option>`).join('');
+  document.getElementById('f-fecha')&&(document.getElementById('f-fecha').value=today());
+  populateSelects();
   if (id==='modal-mov') {
-    clearClienteSelection();
-    showPage('movimientos', document.querySelectorAll('.nav-item')[4]);
+    clearClienteSel();
+    showPage('movimientos',document.querySelectorAll('.nav-item')[3]);
   }
-  if (id==='modal-activo') showPage('activos', document.querySelectorAll('.nav-item')[3]);
-  const el = document.getElementById(id);
+  if (id==='modal-activo') showPage('activos',document.querySelectorAll('.nav-item')[1]);
+  const el=document.getElementById(id);
   el.classList.add('open');
-  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  el.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeModal(id){document.getElementById(id).classList.remove('open');}
 
 function toggleFail() {
-  const t = document.getElementById('f-tipo').value;
-  document.getElementById('fail-wrap').style.display = ['Retiro','Servicio técnico','Baja'].includes(t)?'block':'none';
-  document.getElementById('compras-wrap').style.display = t==='Entrega'?'block':'none';
-  document.getElementById('cliente-field').style.display = t==='Entrega'?'block':'none';
+  const t=document.getElementById('f-tipo').value;
+  const needsFail=['Retiro','Servicio técnico','Baja'].includes(t);
+  document.getElementById('fail-wrap').style.display=needsFail?'block':'none';
+  document.getElementById('compras-wrap').style.display=t==='Entrega'?'block':'none';
 }
 
-function setFilter(btn, val) {
-  activoFilter = val;
+function setFilter(btn,val) {
+  activoFilter=val;
   document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active'); renderActivos();
 }
 
-function setLoading(v) { document.getElementById('spinner').style.display = v?'inline':'none'; }
-function setSyncStatus(t) { document.getElementById('sync-status').textContent = t; }
-function toast(msg, isErr) {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.style.background = isErr?'#A32D2D':'#2C2C2A';
-  el.classList.add('show'); setTimeout(()=>el.classList.remove('show'), 3200);
+function setLoading(v){document.getElementById('spinner').style.display=v?'inline':'none';}
+function setSyncStatus(t){document.getElementById('sync-status').textContent=t;}
+function toast(msg,isErr) {
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.style.background=isErr?'#A32D2D':'#2C2C2A';
+  el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),3200);
 }
-function today() { return new Date().toISOString().split('T')[0]; }
-function daysSince(d) { if(!d) return 9999; return Math.floor((new Date()-new Date(d))/86400000); }
+function today(){return new Date().toISOString().split('T')[0];}
+function daysSince(d){if(!d)return 9999;return Math.floor((new Date()-new Date(d))/86400000);}
 
-// ── Init ─────────────────────────────────
-(async () => {
-  document.getElementById('sync-label').textContent = 'Conectando...';
-  await initSheets();
-  await loadAll();
-  document.getElementById('sync-label').textContent = 'Distribuidora';
+// ── Init — sin cambios ────────────────────
+(async()=>{
+  document.getElementById('sync-label').textContent='Conectando...';
+  await initSheets(); await loadAll();
+  document.getElementById('sync-label').textContent='Distribuidora';
   goStep(1);
 })();
 </script>
