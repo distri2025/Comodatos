@@ -473,14 +473,15 @@ function renderActivos() {
   const filtered = activos.filter(a => {
     const cli = clientes.find(c => c.id === a.cliente);
     const cliNombre = cli ? cli.nombre.toLowerCase() : '';
-    const matchBusqueda = a.qr.toLowerCase().includes(q) || a.modelo.toLowerCase().includes(q) || cliNombre.includes(q);
+    const matchBusqueda = a.qr.toLowerCase().includes(q) || a.modelo.toLowerCase().includes(q) || 
+                          a.cliente.toLowerCase().includes(q) || cliNombre.includes(q);
     const matchFiltro = activoFilter === 'todos' || a.estado === activoFilter;
     return matchBusqueda && matchFiltro;
   });
 
   body.innerHTML = filtered.map(a => {
     const cli = clientes.find(c => c.id === a.cliente);
-    const nombreCli = cli ? cli.nombre : (a.cliente || '—');
+    const nombreCli = cli ? cli.nombre : 'Sin asignar';
     const alert = isAlert(a);
     const prod = Math.min(100, Math.round((a.comprasMes / a.capacidad) * 100));
     const pClass = prod > 70 ? 'pg' : prod > 30 ? 'pw' : 'pb';
@@ -490,7 +491,10 @@ function renderActivos() {
         <td><span class="qr-tag">${a.qr}</span></td>
         <td>${a.modelo}</td>
         <td><span class="badge ${getEstadoClass(a.estado)}">${a.estado}</span></td>
-        <td>${nombreCli} <br><small style="color:var(--text3)">${a.cliente || ''}</small></td>
+        <td>
+          <code style="font-weight:600; color:var(--blue-600)">${a.cliente || '—'}</code>
+          <br><small style="color:var(--text2)">${nombreCli}</small>
+        </td>
         <td>${fmtDate(a.fechaEntrega)}</td>
         <td title="${a.ultimoCenso}">${relativeTime(a.ultimoCenso)}</td>
         <td>
@@ -510,14 +514,17 @@ function renderActivos() {
 function filtrarAC(q) {
   const list = document.getElementById('ac-list');
   const matches = clientes.filter(c => 
-    c.nombre.toLowerCase().includes(q.toLowerCase()) || 
-    c.id.toLowerCase().includes(q.toLowerCase())
+    c.id.toLowerCase().includes(q.toLowerCase()) || 
+    c.nombre.toLowerCase().includes(q.toLowerCase())
   ).slice(0, 8);
   
   list.innerHTML = matches.map(c => `
     <div class="ac-item" onmousedown="seleccionarCliente('${c.id}')">
-      <span>${c.nombre}</span><span class="ac-id">${c.id}</span>
-      <div class="ac-sub">${[c.zona, c.direccion].filter(Boolean).join(' · ')}</div>
+      <div style="display:flex; justify-content:space-between">
+        <code style="color:var(--blue-600); font-weight:600">${c.id}</code>
+        <span style="font-size:11px; color:var(--text3)">${c.zona || ''}</span>
+      </div>
+      <div style="font-size:13px; margin-top:2px">${c.nombre}</div>
     </div>`).join('');
   list.classList.toggle('open', matches.length > 0);
 }
@@ -526,15 +533,14 @@ function seleccionarCliente(id) {
   const cli = clientes.find(c => c.id === id);
   if (!cli) return;
 
-  document.getElementById('f-cli').value = cli.id; // Guarda el ID para el POST
-  document.getElementById('sel-client-name').innerText = cli.nombre;
-  document.getElementById('sel-client-sub').innerText = "ID: " + cli.id;
+  document.getElementById('f-cli').value = cli.id; 
+  document.getElementById('sel-client-name').innerHTML = `<code style="font-size:14px">${cli.id}</code>`;
+  document.getElementById('sel-client-sub').innerText = cli.nombre;
   
   document.getElementById('sel-client-display').style.display = 'block';
   document.getElementById('cli-ac-wrap').style.display = 'none';
   cerrarAC();
 }
-
 function clearClienteSel() {
   document.getElementById('f-cli').value = "";
   document.getElementById('f-cli-search').value = "";
