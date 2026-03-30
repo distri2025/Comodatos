@@ -145,6 +145,48 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-600
 .sel-client{background:var(--blue-50);border:1px solid var(--blue-600);border-radius:var(--r);padding:8px 12px;font-size:13px;display:flex;justify-content:space-between;align-items:center}
 .sel-client-name{font-weight:500}
 .sel-client-sub{font-size:11px;color:var(--blue-600);margin-top:2px}
+/* --- Ajustes de Refinamiento --- */
+
+/* 1. Corrección para la tabla de previsualización con scroll */
+.preview-table {
+  display: table; /* Reset del block para mantener alineación */
+  max-height: none; 
+}
+/* Creamos un contenedor para el scroll de la previsualización */
+#step3 > div[style*="overflow-y:auto"] {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border2) transparent;
+}
+
+/* 2. Scrollbars más finos para no ensuciar el diseño "clean" */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+/* 3. Responsividad básica para las métricas */
+@media (max-width: 850px) {
+  .metrics { grid-template-columns: repeat(2, 1fr); }
+  .sidebar { width: 60px; min-width: 60px; }
+  .sidebar .logo h1, .sidebar .logo small, .nav-item span, .sidebar-footer { display: none; }
+  .nav-item { justify-content: center; padding: 12px 0; }
+}
+
+/* 4. Mejora en inputs para que no se vean "pegados" al borde */
+input, select, textarea {
+  line-height: 1.4;
+}
+
+/* 5. Efecto de elevación sutil en cards de clientes */
+.client-card {
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  cursor: pointer;
+}
+.client-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border-color: var(--blue-600);
+}
 </style>
 </head>
 <body>
