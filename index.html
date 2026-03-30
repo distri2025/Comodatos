@@ -158,6 +158,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-600
       <div class="nav-item" onclick="showPage('movimientos',this)">◎ Movimientos</div>
       <div class="nav-item" onclick="showPage('checklist',this)">◻ Checklist</div>
       <div class="nav-item" onclick="showPage('compras',this)">↑ Importar compras</div>
+      <div class="nav-item" onclick="showPage('checklist-import',this)">↑ Importar checklist</div>
     </nav>
     <div class="sidebar-footer"><span id="sync-status">—</span></div>
   </div>
@@ -182,7 +183,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-600
         <div class="metrics">
           <div class="metric"><div class="metric-label">Total activos</div><div class="metric-value" id="m-total">—</div><div class="metric-sub">en el parque</div></div>
           <div class="metric"><div class="metric-label">Entregados</div><div class="metric-value" id="m-ent" style="color:var(--blue-600)">—</div><div class="metric-sub">comodato activo</div></div>
-          <div class="metric"><div class="metric-label">En servicio técnico</div><div class="metric-value" id="m-srv" style="color:#BA7517">—</div><div class="metric-sub">en reparación</div></div>
+          <div class="metric"><div class="metric-label">Alta disponible</div><div class="metric-value" id="m-srv" style="color:var(--green-600)">—</div><div class="metric-sub">sin asignar</div></div>
           <div class="metric"><div class="metric-label">Alertas</div><div class="metric-value" id="m-alt" style="color:var(--red-600)">—</div><div class="metric-sub">requieren atención</div></div>
         </div>
         <div class="card">
@@ -339,24 +340,36 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-600
         </div>
       </div>
 
-      <!-- IMPORTAR COMPRAS -->
+      <!-- IMPORTAR COMPRAS (Excel) -->
       <div class="page" id="page-compras">
         <div class="card">
           <div class="card-header">
-            <span class="card-title">Importar compras desde CSV</span>
+            <span class="card-title">Importar compras desde Excel</span>
             <span style="font-size:12px;color:var(--text3)">Actualiza Compras_Mes de todos los activos entregados del período</span>
           </div>
           <div class="card-body">
+
+            <!-- Leyenda de columnas requeridas -->
+            <div style="background:var(--bg2);border-radius:var(--r);padding:12px 16px;margin-bottom:18px;font-size:12px">
+              <div style="font-weight:500;margin-bottom:8px;color:var(--text2)">Columnas requeridas en el archivo Excel:</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <span style="background:var(--bg);border:1px solid var(--border2);border-radius:4px;padding:3px 10px;font-family:var(--mono);font-size:11px">Cliente_ID</span>
+                <span style="background:var(--bg);border:1px solid var(--border2);border-radius:4px;padding:3px 10px;font-family:var(--mono);font-size:11px">Cantidad</span>
+                <span style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:3px 10px;font-family:var(--mono);font-size:11px;color:var(--text3)">Periodo <span style="font-family:var(--font)">(opcional)</span></span>
+              </div>
+              <div style="margin-top:8px;color:var(--text3)">El campo <code style="font-family:var(--mono);background:var(--bg3);padding:1px 5px;border-radius:3px">Cliente_ID</code> debe coincidir con el código de cliente registrado en el sistema. Decimales con coma o punto son aceptados.</div>
+            </div>
+
             <div id="step1">
               <div style="font-size:12px;font-weight:500;color:var(--text3);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Paso 1 — Subir archivo</div>
               <div class="drop-zone" id="drop-zone" onclick="document.getElementById('csv-input').click()"
                 ondragover="event.preventDefault();this.classList.add('over')"
                 ondragleave="this.classList.remove('over')" ondrop="handleDrop(event)">
-                <div class="drop-icon">📄</div>
-                <div style="font-size:14px;font-weight:500;margin-top:8px">Arrastrá tu CSV aquí o hacé clic para seleccionar</div>
-                <p>Archivos .csv o .txt — separados por coma, punto y coma, o tabulación</p>
+                <div class="drop-icon">📊</div>
+                <div style="font-size:14px;font-weight:500;margin-top:8px">Arrastrá tu Excel aquí o hacé clic para seleccionar</div>
+                <p>Archivos .xlsx — la primera fila debe ser el encabezado</p>
               </div>
-              <input type="file" id="csv-input" accept=".csv,.txt" style="display:none" onchange="handleFile(this.files[0])">
+              <input type="file" id="csv-input" accept=".xlsx,.xls" style="display:none" onchange="handleFile(this.files[0])">
             </div>
             <div id="step2" style="display:none">
               <div style="font-size:12px;font-weight:500;color:var(--text3);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Paso 2 — Mapear columnas</div>
@@ -417,11 +430,75 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-600
         </div>
       </div>
 
+      <!-- IMPORTAR CHECKLIST (desde Google Forms / Excel) -->
+      <div class="page" id="page-checklist-import">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Importar checklist desde Excel</span>
+            <span style="font-size:12px;color:var(--text3)">Exportá las respuestas del Google Form y subí el .xlsx</span>
+          </div>
+          <div class="card-body">
+
+            <!-- Leyenda de columnas -->
+            <div style="background:var(--bg2);border-radius:var(--r);padding:12px 16px;margin-bottom:18px;font-size:12px">
+              <div style="font-weight:500;margin-bottom:8px;color:var(--text2)">Columnas requeridas (nombres exactos del formulario):</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+                <span style="background:var(--bg);border:1px solid var(--border2);border-radius:4px;padding:3px 10px;font-family:var(--mono);font-size:11px">Marca temporal</span>
+                <span style="background:var(--bg);border:1px solid var(--border2);border-radius:4px;padding:3px 10px;font-family:var(--mono);font-size:11px">Cliente_ID</span>
+                <span style="background:var(--bg);border:1px solid var(--border2);border-radius:4px;padding:3px 10px;font-family:var(--mono);font-size:11px">Activo_QR</span>
+                <span style="background:var(--bg);border:1px solid var(--border2);border-radius:4px;padding:3px 10px;font-family:var(--mono);font-size:11px">Vendedor</span>
+                <span style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:3px 10px;font-family:var(--mono);font-size:11px;color:var(--text3)">Foto <span style="font-family:var(--font)">(opcional)</span></span>
+              </div>
+              <div style="color:var(--text3)">El campo <code style="font-family:var(--mono);background:var(--bg3);padding:1px 5px;border-radius:3px">Marca temporal</code> se usa como fecha de censo. Formato: <code style="font-family:var(--mono);background:var(--bg3);padding:1px 5px;border-radius:3px">5/1/2026 7:12:29</code></div>
+            </div>
+
+            <div id="cl-step1">
+              <div style="font-size:12px;font-weight:500;color:var(--text3);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Paso 1 — Subir archivo</div>
+              <div class="drop-zone" id="cl-drop-zone" onclick="document.getElementById('cl-input').click()"
+                ondragover="event.preventDefault();this.classList.add('over')"
+                ondragleave="this.classList.remove('over')" ondrop="handleClDrop(event)">
+                <div class="drop-icon">📋</div>
+                <div style="font-size:14px;font-weight:500;margin-top:8px">Arrastrá el Excel del formulario o hacé clic para seleccionar</div>
+                <p>Archivo .xlsx exportado desde Google Sheets (respuestas del form)</p>
+              </div>
+              <input type="file" id="cl-input" accept=".xlsx,.xls" style="display:none" onchange="handleClFile(this.files[0])">
+            </div>
+
+            <div id="cl-step2" style="display:none">
+              <div style="font-size:12px;font-weight:500;color:var(--text3);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Paso 2 — Confirmar importación</div>
+              <div id="cl-info" class="info-box"></div>
+              <div id="cl-warn" class="warn-box" style="display:none"></div>
+              <div style="font-size:12px;font-weight:500;color:var(--text3);margin-bottom:6px">Previsualización (primeras 15 filas)</div>
+              <div style="overflow-x:auto;max-height:260px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--r)">
+                <table class="preview-table"><thead id="cl-prev-head"></thead><tbody id="cl-prev-body"></tbody></table>
+              </div>
+              <div style="margin-top:20px;display:flex;gap:8px">
+                <button class="btn btn-success" onclick="applyChecklist()">✓ Aplicar censos</button>
+                <button class="btn" onclick="resetCl()">← Cambiar archivo</button>
+              </div>
+            </div>
+
+            <div id="cl-step3" style="display:none">
+              <div style="text-align:center;padding:32px 0">
+                <div style="font-size:40px;margin-bottom:12px">✓</div>
+                <div style="font-size:16px;font-weight:500;margin-bottom:8px" id="cl-result-title"></div>
+                <div style="font-size:13px;color:var(--text3);margin-bottom:24px" id="cl-result-sub"></div>
+                <div style="display:flex;gap:8px;justify-content:center">
+                  <button class="btn btn-primary" onclick="showPage('activos',document.querySelectorAll('.nav-item')[1])">Ver activos →</button>
+                  <button class="btn" onclick="resetCl()">Importar otro archivo</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwaSc7imqIMZjv7zNNjv3J9gAtWmACR3R6wUOj1n3XrRkkCPzUOJiA9oaCJo6u9rUMoHw/exec';
 const MIN_CAJONES = 20;
@@ -653,7 +730,7 @@ function clearClienteSel() {
 
 function cerrarAC(){document.getElementById('ac-list').classList.remove('open');}
 
-// ── Importar compras ──────────────────────────────────────────
+// ── Importar compras (Excel) ──────────────────────────────────
 function handleDrop(e) {
   e.preventDefault(); document.getElementById('drop-zone').classList.remove('over');
   const f=e.dataTransfer.files[0]; if(f) handleFile(f);
@@ -661,27 +738,24 @@ function handleDrop(e) {
 function handleFile(file) {
   if (!file) return;
   const reader=new FileReader();
-  reader.onload=e=>parseCSV(e.target.result,file.name);
-  reader.readAsText(file,'UTF-8');
-}
-function parseCSV(text,filename) {
-  const sample=text.split('\n')[0];
-  const sep=sample.includes(';')?';':sample.includes('\t')?'\t':',';
-  const lines=text.split('\n').map(l=>l.trim()).filter(Boolean);
-  if (lines.length<2){toast('El archivo parece vacío.',true);return;}
-  csvHeaders=lines[0].split(sep).map(h=>h.replace(/^"|"$/g,'').trim());
-  csvRows=lines.slice(1).map(line=>{
-    const vals=line.split(sep).map(v=>v.replace(/^"|"$/g,'').trim());
-    return Object.fromEntries(csvHeaders.map((h,i)=>[h,vals[i]||'']));
-  });
-  const opts=csvHeaders.map(h=>`<option value="${h}">${h}</option>`).join('');
-  ['map-cliente','map-cantidad'].forEach(id=>{document.getElementById(id).innerHTML=opts;});
-  document.getElementById('map-periodo').innerHTML='<option value="">— no incluir —</option>'+opts;
-  autoDetect('map-cliente',['cliente','client','nombre','name','cod','codigo','code','id']);
-  autoDetect('map-cantidad',['cantidad','cant','bultos','unidades','units','qty','total','compras','ventas']);
-  document.getElementById('file-info').textContent=
-    `📄 ${filename} — ${csvRows.length} registros, ${csvHeaders.length} columnas. Separador: "${sep==='\t'?'tabulación':sep}"`;
-  goStep(2); updatePreview();
+  reader.onload=e=>{
+    const wb=XLSX.read(e.target.result,{type:'array'});
+    const ws=wb.Sheets[wb.SheetNames[0]];
+    // raw:false para que los números salgan como string con la coma local
+    const data=XLSX.utils.sheet_to_json(ws,{raw:false,defval:''});
+    if (!data.length){toast('El archivo parece vacío.',true);return;}
+    csvHeaders=Object.keys(data[0]);
+    csvRows=data;
+    const opts=csvHeaders.map(h=>`<option value="${h}">${h}</option>`).join('');
+    ['map-cliente','map-cantidad'].forEach(id=>{document.getElementById(id).innerHTML=opts;});
+    document.getElementById('map-periodo').innerHTML='<option value="">— no incluir —</option>'+opts;
+    autoDetect('map-cliente',['cliente_id','cliente','client','cod','codigo','code','id']);
+    autoDetect('map-cantidad',['cantidad','cant','bultos','unidades','units','qty','total','compras','ventas']);
+    document.getElementById('file-info').textContent=
+      `📊 ${file.name} — ${data.length} registros, ${csvHeaders.length} columnas`;
+    goStep(2); updatePreview();
+  };
+  reader.readAsArrayBuffer(file);
 }
 function autoDetect(selectId,keywords) {
   const sel=document.getElementById(selectId);
@@ -723,7 +797,7 @@ function showPreview() {
   const agrupado={};
   csvRows.forEach(row=>{
     const key=(row[colCliente]||'').trim();
-    const raw=parseFloat((row[colCantidad]||'0').replace(',','.'))||0;
+    const raw=parseFloat(String(row[colCantidad]||'0').replace(',','.'))||0;
     const cajones=csvUnit==='bultos'?raw/upb:raw;
     if (!key) return;
     agrupado[key]=(agrupado[key]||0)+cajones;
@@ -837,7 +911,7 @@ function renderDashboard(){
   const alts=activos.filter(a=>hasAlert(a));
   document.getElementById('m-total').textContent=activos.length;
   document.getElementById('m-ent').textContent=activos.filter(a=>a.estado==='Entregado').length;
-  document.getElementById('m-srv').textContent=activos.filter(a=>a.estado==='En Servicio').length;
+  document.getElementById('m-srv').textContent=activos.filter(a=>a.estado==='Disponible').length;
   document.getElementById('m-alt').textContent=alts.length;
   const banner=document.getElementById('alert-banner');
   alts.length?banner.classList.add('on'):banner.classList.remove('on');
@@ -893,9 +967,10 @@ function renderClientes(){
       <div class="client-info">
         <div class="client-name">${c.nombre} <span class="qr-tag" style="margin-left:4px">${c.id}</span></div>
         <div class="client-meta">
+          <span class="qr-tag" style="font-size:11px">${c.id}</span>
           ${c.direccion?`<span>📍 ${c.direccion}</span>`:''}
-          ${c.zona?`<span>🗺 ${c.zona}</span>`:''}
           ${c.contacto?`<span>📞 ${c.contacto}</span>`:''}
+          ${c.zona?`<span style="color:var(--text3)">🗺 ${c.zona}</span>`:''}
           <span style="color:var(--blue-600)">🧊 ${hels} heladera${hels!==1?'s':''}</span>
         </div>
       </div>
@@ -970,7 +1045,7 @@ function showPage(id,navEl){
   document.getElementById('page-'+id).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(navEl) navEl.classList.add('active');
-  const titles={dashboard:'Dashboard',activos:'Activos',clientes:'Clientes',movimientos:'Movimientos',checklist:'Checklist de preventa',compras:'Importar compras'};
+  const titles={dashboard:'Dashboard',activos:'Activos',clientes:'Clientes',movimientos:'Movimientos',checklist:'Checklist de preventa',compras:'Importar compras',['checklist-import']:'Importar checklist'};
   document.getElementById('page-title').textContent=titles[id]||id;
 }
 
@@ -1007,6 +1082,121 @@ function toast(msg,isErr){
 }
 function today(){return new Date().toISOString().split('T')[0];}
 function daysSince(d){if(!d)return 9999;return Math.floor((new Date()-new Date(d))/86400000);}
+
+// ── Importar checklist (Google Forms Excel) ───────────────────
+let clRows = [];
+
+function handleClDrop(e) {
+  e.preventDefault(); document.getElementById('cl-drop-zone').classList.remove('over');
+  const f=e.dataTransfer.files[0]; if(f) handleClFile(f);
+}
+
+function handleClFile(file) {
+  if (!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const wb=XLSX.read(e.target.result,{type:'array'});
+    const ws=wb.Sheets[wb.SheetNames[0]];
+    const data=XLSX.utils.sheet_to_json(ws,{raw:false,defval:''});
+    if (!data.length){toast('El archivo parece vacío.',true);return;}
+
+    // Detectar columnas requeridas (case-insensitive, trim)
+    const cols=Object.keys(data[0]);
+    const find=(keywords)=>cols.find(c=>keywords.some(k=>c.trim().toLowerCase().includes(k.toLowerCase())));
+    const colFecha   = find(['marca temporal','timestamp','fecha']);
+    const colCliId   = find(['cliente_id','cliente id','clienteid']);
+    const colActivo  = find(['activo_qr','activo qr','activoqr','qr']);
+    const colVendedor= find(['vendedor','responsable','nombre']);
+
+    const missing=[];
+    if(!colFecha)   missing.push('Marca temporal');
+    if(!colCliId)   missing.push('Cliente_ID');
+    if(!colActivo)  missing.push('Activo_QR');
+    if(!colVendedor)missing.push('Vendedor');
+    if(missing.length){toast('Columnas no encontradas: '+missing.join(', '),true);return;}
+
+    clRows=data.map(r=>({
+      fecha:   parseFecha(r[colFecha]),
+      cliId:   (r[colCliId]||'').trim(),
+      activoQr:(r[colActivo]||'').trim(),
+      vendedor:(r[colVendedor]||'').trim(),
+    })).filter(r=>r.activoQr);
+
+    // Preview
+    const actSet=new Set(activos.map(a=>a.qr));
+    const matched=clRows.filter(r=>actSet.has(r.activoQr));
+    const noMatch=clRows.filter(r=>!actSet.has(r.activoQr));
+
+    document.getElementById('cl-info').textContent=
+      `📋 ${file.name} — ${clRows.length} registros · ${matched.length} activos encontrados`;
+    const warnEl=document.getElementById('cl-warn');
+    if(noMatch.length){
+      warnEl.style.display='block';
+      warnEl.textContent=`${noMatch.length} QR no encontrados (ignorados): ${noMatch.slice(0,4).map(r=>r.activoQr).join(', ')}${noMatch.length>4?'...':''}`;
+    } else { warnEl.style.display='none'; }
+
+    document.getElementById('cl-prev-head').innerHTML=
+      '<tr><th>Fecha censo</th><th>Activo QR</th><th>Cliente ID</th><th>Vendedor</th><th>Estado</th></tr>';
+    document.getElementById('cl-prev-body').innerHTML=
+      clRows.slice(0,15).map(r=>{
+        const ok=actSet.has(r.activoQr);
+        return `<tr><td>${r.fecha}</td><td><span class="qr-tag">${r.activoQr}</span></td><td>${r.cliId}</td><td>${r.vendedor}</td><td class="${ok?'match':'no-match'}">${ok?'✓':'✗ No encontrado'}</td></tr>`;
+      }).join('');
+
+    goClStep(2);
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function parseFecha(val) {
+  if (!val) return today();
+  // Formato "5/1/2026 7:12:29" → "2026-01-05"
+  const str=String(val).trim();
+  // Intentar parsear como fecha
+  const parts=str.split(' ')[0].split('/');
+  if(parts.length===3){
+    const [d,m,y]=parts;
+    return `${y.padStart(4,'0')}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+  }
+  // Fallback: Date parse
+  const d=new Date(str);
+  if(!isNaN(d)) return d.toISOString().split('T')[0];
+  return today();
+}
+
+async function applyChecklist() {
+  const actSet=new Set(activos.map(a=>a.qr));
+  const toUpdate=clRows.filter(r=>actSet.has(r.activoQr));
+  if(!toUpdate.length){toast('Sin activos para actualizar.',true);return;}
+
+  setLoading(true);
+  let ok=0,err=0;
+  for (const r of toUpdate) {
+    const idx=activos.findIndex(a=>a.qr===r.activoQr);
+    if(idx<0){err++;continue;}
+    const a={...activos[idx], ultimoCenso:r.fecha};
+    const movRow=['Censo',r.activoQr,r.cliId||a.clienteId||'',a.cliente||'',r.vendedor,r.fecha,'',''];
+    try {
+      await api({method:'POST',body:{action:'update',sheet:'Activos',rowIndex:idx,row:activoToRow(a)}});
+      await api({method:'POST',body:{action:'append',sheet:'Movimientos',row:movRow}});
+      ok++;
+    } catch(e){err++;}
+  }
+  await loadAll();
+  document.getElementById('cl-result-title').textContent=`${ok} censos registrados correctamente`;
+  document.getElementById('cl-result-sub').textContent=`Último censo actualizado en cada activo.${err?' '+err+' errores.':''}`;
+  goClStep(3);
+  setLoading(false);
+}
+
+function goClStep(n){
+  [1,2,3].forEach(i=>{document.getElementById('cl-step'+i).style.display=i===n?'block':'none';});
+}
+function resetCl(){
+  clRows=[];
+  document.getElementById('cl-input').value='';
+  goClStep(1);
+}
 
 (async()=>{
   document.getElementById('sync-label').textContent='Conectando...';
