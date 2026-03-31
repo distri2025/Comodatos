@@ -150,13 +150,13 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-600
 <body>
 <div class="app">
   <div class="sidebar">
-    <div class="logo"><h1>🧊 Comodatos D.E.E.</h1><small id="sync-label">Cargando...</small></div>
+    <div class="logo"><h1>🧊 Comodatos</h1><small id="sync-label">Cargando...</small></div>
     <nav>
       <div class="nav-item active" onclick="showPage('dashboard',this)">▦ Dashboard</div>
       <div class="nav-item" onclick="showPage('activos',this)">◈ Activos</div>
       <div class="nav-item" onclick="showPage('clientes',this)">◉ Clientes</div>
       <div class="nav-item" onclick="showPage('movimientos',this)">◎ Movimientos</div>
-      <div class="nav-item" onclick="showPage('checklist',this)">◻ Checklist</div>
+      <div class="nav-item" onclick="showPage('checklist',this)">◻ Censos</div>
       <div class="nav-item" onclick="showPage('compras',this)">↑ Importar compras</div>
       <div class="nav-item" onclick="showPage('checklist-import',this)">↑ Importar checklist</div>
     </nav>
@@ -336,17 +336,22 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-600
         </div>
       </div>
 
-      <!-- CHECKLIST -->
+      <!-- CHECKLIST — historial de censos importados -->
       <div class="page" id="page-checklist">
         <div class="card">
           <div class="card-header">
-            <span class="card-title">Checklist de preventa mensual</span>
-            <!-- value = clienteId, display = nombre -->
-            <select id="cli-sel" style="font-size:13px;padding:5px 8px;width:220px" onchange="renderChecklist()">
-              <option value="">Seleccionar cliente...</option>
-            </select>
+            <span class="card-title">Censos registrados</span>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input class="search-input" style="width:200px" type="text" id="search-censo" placeholder="Buscar por QR o cliente..." oninput="renderChecklist()">
+              <button class="btn btn-primary btn-sm" onclick="showPage('checklist-import',document.querySelectorAll('.nav-item')[5])">↑ Importar nuevo</button>
+            </div>
           </div>
-          <div id="checklist-content" class="card-body"><div class="empty-state">Seleccioná un cliente para ver el checklist.</div></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Fecha censo</th><th>Activo QR</th><th>Modelo</th><th>Cliente ID</th><th>Cliente</th><th>Vendedor</th></tr></thead>
+              <tbody id="checklist-body"></tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -992,60 +997,41 @@ function renderMovimientos(){
 }
 
 function renderChecklist(){
-  const cliId=document.getElementById('cli-sel').value;  // ahora es clienteId
-  const cont=document.getElementById('checklist-content');
-  if(!cliId){cont.innerHTML='<div class="empty-state">Seleccioná un cliente.</div>';return;}
-  const hels=activos.filter(a=>a.estado==='Entregado'&&a.clienteId===cliId);
-  if(!hels.length){cont.innerHTML='<div class="empty-state">Sin heladeras activas para este cliente.</div>';return;}
-  cont.innerHTML=hels.map((a,i)=>`
-    <div style="margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)">
-      <div style="font-weight:500;font-size:13px;margin-bottom:10px"><span class="qr-tag">${a.qr}</span> — ${a.modelo}</div>
-      ${['Heladera presente en el local','Solo productos de la marca','Encendida y funcionando'].map((item,j)=>`
-        <div class="cl-item">
-          <div class="cl-check" id="cc-${i}-${j}" onclick="this.classList.toggle('on');this.textContent=this.classList.contains('on')?'✓':''"></div>
-          <span>${item}</span>
-        </div>`).join('')}
-      <div style="display:flex;justify-content:flex-end;margin-top:12px">
-        <button class="btn btn-primary btn-sm" onclick="confirmarCenso('${a.qr}',${i})">Confirmar censo</button>
-      </div>
-    </div>`).join('');
-}
+  const q=(document.getElementById('search-censo').value||'').toLowerCase();
+  // Mostrar movimientos tipo Censo ordenados por fecha desc
+  const censos=[...movimientos]
+    .filter(m=>m.tipo==='Censo'||m.tipo==='Actualización compras'&&false) // solo Censo
+    .filter(m=>!q||
+      (m.activo||'').toLowerCase().includes(q)||
+      (m.clienteId||'').toLowerCase().includes(q)||
+      (m.cliente||'').toLowerCase().includes(q)||
+      (m.chofer||'').toLowerCase().includes(q)
+    )
+    .reverse();
 
-function confirmarCenso(qr,idx){
-  if(![0,1,2].every(j=>document.getElementById(`cc-${idx}-${j}`)?.classList.contains('on'))){
-    toast('Completá los 3 ítems antes de confirmar.');return;
+  const tbody=document.getElementById('checklist-body');
+  if(!censos.length){
+    tbody.innerHTML='<tr><td colspan="6" class="empty-state">Sin censos registrados. Importá el Excel del Google Form.</td></tr>';
+    return;
   }
-  guardarCenso(qr);
-}
-
-function irChecklist(qr){
-  const a=activos.find(x=>x.qr===qr);
-  if(!a||!a.clienteId)return;
-  showPage('checklist',document.querySelectorAll('.nav-item')[4]);
-  document.getElementById('cli-sel').value=a.clienteId;  // usa ID, no nombre
-  renderChecklist();
+  tbody.innerHTML=censos.map(m=>{
+    const a=activos.find(x=>x.qr===m.activo);
+    return `<tr>
+      <td>${fmtDate(m.fecha)}</td>
+      <td><span class="qr-tag">${m.activo}</span></td>
+      <td style="color:var(--text2)">${a?a.modelo:'—'}</td>
+      <td><span class="qr-tag">${m.clienteId||'—'}</span></td>
+      <td style="color:var(--text2)">${m.cliente||'—'}</td>
+      <td style="color:var(--text2)">${m.chofer||'—'}</td>
+    </tr>`;
+  }).join('');
 }
 
 function renderAll(){
-  renderDashboard();renderActivos();renderClientes();renderMovimientos();populateSelects();
+  renderDashboard();renderActivos();renderClientes();renderMovimientos();renderChecklist();populateSelects();
 }
 
 function populateSelects(){
-  // Checklist: options con value=clienteId y texto=nombre
-  const entregados=[...new Map(
-    activos.filter(a=>a.estado==='Entregado'&&a.clienteId)
-      .map(a=>[a.clienteId,a])
-  ).entries()];
-  const cliSel=document.getElementById('cli-sel');
-  const prev=cliSel.value;
-  cliSel.innerHTML='<option value="">Seleccionar cliente...</option>'+
-    entregados.map(([id,a])=>{
-      const c=clientes.find(x=>x.id===id);
-      const nombre=c?c.nombre:(a.cliente||'');
-      return `<option value="${id}">${id}${nombre?' — '+nombre:''}</option>`;
-    }).join('');
-  cliSel.value=prev;
-  // Activos dropdown
   document.getElementById('f-act-id').innerHTML=
     activos.map(a=>`<option value="${a.qr}">${a.qr} — ${a.modelo} (${a.estado})</option>`).join('');
 }
@@ -1056,7 +1042,7 @@ function showPage(id,navEl){
   document.getElementById('page-'+id).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(navEl) navEl.classList.add('active');
-  const titles={dashboard:'Dashboard',activos:'Activos',clientes:'Clientes',movimientos:'Movimientos',checklist:'Checklist de preventa',compras:'Importar compras',['checklist-import']:'Importar checklist'};
+  const titles={dashboard:'Dashboard',activos:'Activos',clientes:'Clientes',movimientos:'Movimientos',checklist:'Censos registrados',compras:'Importar compras',['checklist-import']:'Importar checklist'};
   document.getElementById('page-title').textContent=titles[id]||id;
 }
 
