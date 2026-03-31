@@ -127,12 +127,12 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-600
 .unit-toggle{display:flex;gap:0;border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;width:fit-content}
 .unit-btn{padding:6px 14px;font-size:12px;cursor:pointer;border:none;background:var(--bg);color:var(--text2);font-family:var(--font);transition:background .1s}
 .unit-btn.active{background:var(--blue-600);color:#fff}
-/* Clientes */
-.client-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--rl);padding:14px 18px;margin-bottom:10px;display:flex;align-items:center;gap:14px}
-.client-avatar{width:38px;height:38px;border-radius:50%;background:var(--blue-50);color:var(--blue-600);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;flex-shrink:0}
-.client-info{flex:1;min-width:0}
-.client-name{font-weight:500;font-size:13px}
-.client-meta{font-size:12px;color:var(--text3);margin-top:3px;display:flex;gap:12px;flex-wrap:wrap}
+/* Clientes — tabla compacta */
+.cli-table{width:100%;border-collapse:collapse;font-size:13px}
+.cli-table th{padding:8px 14px;text-align:left;font-size:11px;font-weight:500;color:var(--text3);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+.cli-table td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:middle;white-space:nowrap}
+.cli-table tr:last-child td{border-bottom:none}
+.cli-table tr:hover td{background:var(--bg2)}
 /* Autocomplete */
 .ac-wrap{position:relative}
 .ac-list{position:absolute;top:100%;left:0;right:0;background:var(--bg);border:1px solid var(--border2);border-radius:var(--r);z-index:50;max-height:200px;overflow-y:auto;display:none;margin-top:2px}
@@ -145,48 +145,6 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-600
 .sel-client{background:var(--blue-50);border:1px solid var(--blue-600);border-radius:var(--r);padding:8px 12px;font-size:13px;display:flex;justify-content:space-between;align-items:center}
 .sel-client-name{font-weight:500}
 .sel-client-sub{font-size:11px;color:var(--blue-600);margin-top:2px}
-/* --- Ajustes de Refinamiento --- */
-
-/* 1. Corrección para la tabla de previsualización con scroll */
-.preview-table {
-  display: table; /* Reset del block para mantener alineación */
-  max-height: none; 
-}
-/* Creamos un contenedor para el scroll de la previsualización */
-#step3 > div[style*="overflow-y:auto"] {
-  scrollbar-width: thin;
-  scrollbar-color: var(--border2) transparent;
-}
-
-/* 2. Scrollbars más finos para no ensuciar el diseño "clean" */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text3); }
-
-/* 3. Responsividad básica para las métricas */
-@media (max-width: 850px) {
-  .metrics { grid-template-columns: repeat(2, 1fr); }
-  .sidebar { width: 60px; min-width: 60px; }
-  .sidebar .logo h1, .sidebar .logo small, .nav-item span, .sidebar-footer { display: none; }
-  .nav-item { justify-content: center; padding: 12px 0; }
-}
-
-/* 4. Mejora en inputs para que no se vean "pegados" al borde */
-input, select, textarea {
-  line-height: 1.4;
-}
-
-/* 5. Efecto de elevación sutil en cards de clientes */
-.client-card {
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
-  cursor: pointer;
-}
-.client-card:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  border-color: var(--blue-600);
-}
 </style>
 </head>
 <body>
@@ -302,7 +260,17 @@ input, select, textarea {
           <input class="search-input" type="text" placeholder="Buscar cliente..." id="search-cli" oninput="renderClientes()">
           <button class="btn btn-primary" onclick="abrirModalCliente()">+ Nuevo cliente</button>
         </div>
-        <div id="clientes-list"></div>
+        <div class="card">
+          <div class="table-wrap">
+            <table class="cli-table">
+              <thead><tr>
+                <th>Código</th><th>Nombre</th><th>Dirección</th>
+                <th>Teléfono</th><th>Zona</th><th>Activos</th><th></th>
+              </tr></thead>
+              <tbody id="clientes-list"></tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <!-- MOVIMIENTOS -->
@@ -739,13 +707,14 @@ async function saveCliente() {
 function filtrarAC(q) {
   const list=document.getElementById('ac-list');
   const matches=clientes.filter(c=>
-    c.nombre.toLowerCase().includes(q.toLowerCase())||
-    c.id.toLowerCase().includes(q.toLowerCase())
+    c.id.toLowerCase().includes(q.toLowerCase())||
+    c.nombre.toLowerCase().includes(q.toLowerCase())
   ).slice(0,8);
   list.innerHTML=matches.map(c=>`
     <div class="ac-item" onmousedown="selectCliente('${c.id}')">
-      <span>${c.nombre}</span><span class="ac-id">${c.id}</span>
-      <div class="ac-sub">${[c.zona,c.direccion].filter(Boolean).join(' · ')}</div>
+      <span style="font-family:var(--mono);font-size:12px;font-weight:500">${c.id}</span>
+      <span style="color:var(--text2);margin-left:8px">${c.nombre}</span>
+      <div class="ac-sub">${[c.direccion,c.zona].filter(Boolean).join(' · ')}</div>
     </div>`).join('');
   list.classList.toggle('open',matches.length>0);
 }
@@ -753,10 +722,10 @@ function filtrarAC(q) {
 function selectCliente(id) {
   const c=clientes.find(x=>x.id===id);
   if (!c) return;
-  document.getElementById('f-cli-id').value=c.id;      // ID para vínculo
-  document.getElementById('f-cli').value=c.nombre;     // Nombre para display y Sheet
-  document.getElementById('sel-client-name').textContent=c.nombre;
-  document.getElementById('sel-client-sub').textContent=[c.id,c.zona,c.direccion].filter(Boolean).join(' · ');
+  document.getElementById('f-cli-id').value=c.id;
+  document.getElementById('f-cli').value=c.nombre;
+  document.getElementById('sel-client-name').textContent=c.id+' — '+c.nombre;
+  document.getElementById('sel-client-sub').textContent=[c.direccion,c.zona,c.contacto].filter(Boolean).join(' · ');
   document.getElementById('sel-client-display').style.display='block';
   document.getElementById('cli-ac-wrap').style.display='none';
   cerrarAC();
@@ -959,7 +928,7 @@ function renderDashboard(){
   alts.length?banner.classList.add('on'):banner.classList.remove('on');
   if(alts.length) document.getElementById('alert-text').textContent=`${alts.length} activo(s) requieren atención.`;
   document.getElementById('dash-alerts').innerHTML=alts.length
-    ?alts.map(a=>`<tr class="alert-row"><td><span class="qr-tag">${a.qr}</span></td><td>${a.modelo}</td><td>${a.cliente||'—'}</td><td><span class="badge b-alt">${hasAlert(a)}</span></td><td>${a.ultimoCenso||'—'}</td></tr>`).join('')
+    ?alts.map(a=>`<tr class="alert-row"><td><span class="qr-tag">${a.qr}</span></td><td>${a.modelo}</td><td>${a.cliente||'—'}</td><td><span class="badge b-alt">${hasAlert(a)}</span></td><td>${fmtDate(a.ultimoCenso)}</td></tr>`).join('')
     :'<tr><td colspan="5" class="empty-state">Sin alertas activas ✓</td></tr>';
   const last=[...movimientos].reverse().slice(0,6);
   document.getElementById('dash-tl').innerHTML=last.length?last.map(tlItem).join(''):'<div class="empty-state">Sin movimientos aún.</div>';
@@ -980,10 +949,10 @@ function renderActivos(){
         <td><span class="qr-tag">${a.qr}</span></td><td>${a.modelo}</td>
         <td>${badgeEstado(a.estado)}</td>
         <td>${a.cliente||'—'}${a.clienteId?` <span class="qr-tag">${a.clienteId}</span>`:''}</td>
-        <td>${a.fechaEntrega||'—'}</td>
-        <td>${a.ultimoCenso||'—'} ${al?`<span class="badge b-alt" style="font-size:10px;margin-left:4px">!</span>`:''}</td>
+        <td>${fmtDate(a.fechaEntrega)}</td>
+        <td>${fmtDate(a.ultimoCenso)} ${al?`<span class="badge b-alt" style="font-size:10px;margin-left:4px">!</span>`:''}</td>
         <td>${a.estado==='Entregado'?prodBar(a.comprasMes,a.capacidad):'—'}</td>
-        <td><button class="btn btn-sm" onclick="irChecklist('${a.qr}')">Censar</button></td>
+        <td></td>
       </tr>`;
     }).join('')
     :'<tr><td colspan="8" class="empty-state">Sin resultados.</td></tr>';
@@ -994,30 +963,26 @@ function renderClientes(){
   const list=clientes.filter(c=>
     !q||c.nombre.toLowerCase().includes(q)||c.id.toLowerCase().includes(q)||(c.zona||'').toLowerCase().includes(q)
   );
-  const cont=document.getElementById('clientes-list');
-  if(!list.length){cont.innerHTML='<div class="empty-state">Sin clientes. Usá "+ Nuevo cliente" para agregar.</div>';return;}
-  // Contar heladeras por clienteId
+  const tbody=document.getElementById('clientes-list');
+  if(!list.length){
+    tbody.innerHTML='<tr><td colspan="7" class="empty-state">Sin clientes. Usá "+ Nuevo cliente" para agregar.</td></tr>';
+    return;
+  }
   const helsMap={};
   activos.filter(a=>a.estado==='Entregado'&&a.clienteId).forEach(a=>{
     helsMap[a.clienteId]=(helsMap[a.clienteId]||0)+1;
   });
-  cont.innerHTML=list.map(c=>{
-    const initials=c.nombre.split(' ').slice(0,2).map(w=>w[0]||'').join('').toUpperCase();
+  tbody.innerHTML=list.map(c=>{
     const hels=helsMap[c.id]||0;
-    return `<div class="client-card">
-      <div class="client-avatar">${initials}</div>
-      <div class="client-info">
-        <div class="client-name">${c.nombre} <span class="qr-tag" style="margin-left:4px">${c.id}</span></div>
-        <div class="client-meta">
-          <span class="qr-tag" style="font-size:11px">${c.id}</span>
-          ${c.direccion?`<span>📍 ${c.direccion}</span>`:''}
-          ${c.contacto?`<span>📞 ${c.contacto}</span>`:''}
-          ${c.zona?`<span style="color:var(--text3)">🗺 ${c.zona}</span>`:''}
-          <span style="color:var(--blue-600)">🧊 ${hels} heladera${hels!==1?'s':''}</span>
-        </div>
-      </div>
-      <button class="btn btn-sm" onclick="abrirModalCliente(${c.idx})">Editar</button>
-    </div>`;
+    return `<tr>
+      <td><span class="qr-tag">${c.id}</span></td>
+      <td style="font-weight:500">${c.nombre}</td>
+      <td style="color:var(--text2)">${c.direccion||'—'}</td>
+      <td style="color:var(--text2)">${c.contacto||'—'}</td>
+      <td style="color:var(--text2)">${c.zona||'—'}</td>
+      <td><span class="badge b-ent">🧊 ${hels}</span></td>
+      <td><button class="btn btn-sm" onclick="abrirModalCliente(${c.idx})">Editar</button></td>
+    </tr>`;
   }).join('');
 }
 
@@ -1069,12 +1034,16 @@ function populateSelects(){
   // Checklist: options con value=clienteId y texto=nombre
   const entregados=[...new Map(
     activos.filter(a=>a.estado==='Entregado'&&a.clienteId)
-      .map(a=>[a.clienteId,a.cliente||a.clienteId])
+      .map(a=>[a.clienteId,a])
   ).entries()];
   const cliSel=document.getElementById('cli-sel');
   const prev=cliSel.value;
   cliSel.innerHTML='<option value="">Seleccionar cliente...</option>'+
-    entregados.map(([id,nombre])=>`<option value="${id}">${nombre}</option>`).join('');
+    entregados.map(([id,a])=>{
+      const c=clientes.find(x=>x.id===id);
+      const nombre=c?c.nombre:(a.cliente||'');
+      return `<option value="${id}">${id}${nombre?' — '+nombre:''}</option>`;
+    }).join('');
   cliSel.value=prev;
   // Activos dropdown
   document.getElementById('f-act-id').innerHTML=
@@ -1122,7 +1091,19 @@ function toast(msg,isErr){
   el.textContent=msg;el.style.background=isErr?'#A32D2D':'#2C2C2A';
   el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3200);
 }
-function today(){return new Date().toISOString().split('T')[0];}
+// Formatea fecha ISO o "d/m/yyyy h:mm:ss" → DD/MM/YYYY
+function fmtDate(val){
+  if(!val||val==='—') return '—';
+  // ya viene como YYYY-MM-DD o similar
+  const d=new Date(val);
+  if(!isNaN(d)){
+    const dd=String(d.getDate()).padStart(2,'0');
+    const mm=String(d.getMonth()+1).padStart(2,'0');
+    const yy=d.getFullYear();
+    return `${dd}/${mm}/${yy}`;
+  }
+  return val;
+}
 function daysSince(d){if(!d)return 9999;return Math.floor((new Date()-new Date(d))/86400000);}
 
 // ── Importar checklist (Google Forms Excel) ───────────────────
