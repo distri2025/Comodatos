@@ -150,7 +150,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-600
 <body>
 <div class="app">
   <div class="sidebar">
-    <div class="logo"><h1>🧊 Comodatos D.E.E.</h1><small id="sync-label">Cargando...</small></div>
+    <div class="logo"><h1>🧊 Comodatos</h1><small id="sync-label">Cargando...</small></div>
     <nav>
       <div class="nav-item active" onclick="showPage('dashboard',this)">▦ Dashboard</div>
       <div class="nav-item" onclick="showPage('activos',this)">◈ Activos</div>
@@ -158,7 +158,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-600
       <div class="nav-item" onclick="showPage('movimientos',this)">◎ Movimientos</div>
       <div class="nav-item" onclick="showPage('checklist',this)">◻ Censos</div>
       <div class="nav-item" onclick="showPage('compras',this)">↑ Importar compras</div>
-      <div class="nav-item" onclick="showPage('checklist-import',this)">↑ Importar censos</div>
+      <div class="nav-item" onclick="showPage('checklist-import',this)">↑ Importar checklist</div>
     </nav>
     <div class="sidebar-footer"><span id="sync-status">—</span></div>
   </div>
@@ -522,6 +522,20 @@ const MAX_DIAS_CENSO = 30;
 let activos = [], movimientos = [], clientes = [], activoFilter = 'todos';
 let editingCliIdx = null;
 let csvRows = [], csvHeaders = [], csvUnit = 'bultos';
+
+function today(){return new Date().toISOString().split('T')[0];}
+function daysSince(d){if(!d)return 9999;return Math.floor((new Date()-new Date(d))/86400000);}
+function fmtDate(val){
+  if(!val||val==='—') return '—';
+  const d=new Date(val);
+  if(!isNaN(d)){
+    const dd=String(d.getDate()).padStart(2,'0');
+    const mm=String(d.getMonth()+1).padStart(2,'0');
+    const yy=d.getFullYear();
+    return `${dd}/${mm}/${yy}`;
+  }
+  return val;
+}
 
 // ── Modelo de activo ─────────────────────────────────────────
 // a.clienteId  → ID del cliente (ej: "CLI-001")  — clave de vínculo
@@ -1077,21 +1091,6 @@ function toast(msg,isErr){
   el.textContent=msg;el.style.background=isErr?'#A32D2D':'#2C2C2A';
   el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3200);
 }
-// Formatea fecha ISO o "d/m/yyyy h:mm:ss" → DD/MM/YYYY
-function fmtDate(val){
-  if(!val||val==='—') return '—';
-  // ya viene como YYYY-MM-DD o similar
-  const d=new Date(val);
-  if(!isNaN(d)){
-    const dd=String(d.getDate()).padStart(2,'0');
-    const mm=String(d.getMonth()+1).padStart(2,'0');
-    const yy=d.getFullYear();
-    return `${dd}/${mm}/${yy}`;
-  }
-  return val;
-}
-function daysSince(d){if(!d)return 9999;return Math.floor((new Date()-new Date(d))/86400000);}
-
 // ── Importar checklist (Google Forms Excel) ───────────────────
 let clRows = [];
 
