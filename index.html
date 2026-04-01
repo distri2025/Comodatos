@@ -1040,7 +1040,7 @@ function renderChecklist() {
   const q = (document.getElementById('search-censo').value || '').toLowerCase();
   const censos = [...movimientos].filter(m => m.tipo === 'Censo').filter(m => !q || (m.activo || '').toLowerCase().includes(q) || (m.clienteId || '').toLowerCase().includes(q) || (m.cliente || '').toLowerCase().includes(q) || (m.chofer || '').toLowerCase().includes(q)).reverse();
   const tbody = document.getElementById('checklist-body');
-  if (!censos.length) { tbody.innerHTML = '骨头<td colspan="6" class="empty-state">Sin censos registrados. Importá el Excel del Google Form.骨头</tr>'; return; }
+  if (!censos.length) { tbody.innerHTML = '<td colspan="6" class="empty-state">Sin censos registrados. Importá el Excel del Google Form.</tr>'; return; }
   tbody.innerHTML = censos.map(m => { const a = activos.find(x => x.qr === m.activo); return `<tr><td>${fmtDate(m.fecha)}</td><td><span class="qr-tag">${m.activo}</span></td><td>${a ? a.modelo : '—'}</td><td><span class="qr-tag">${m.clienteId || '—'}</span></td><td>${m.cliente || '—'}</td><td>${m.chofer || '—'}</td> </tr>`; }).join('');
 }
 
