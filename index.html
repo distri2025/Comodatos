@@ -530,8 +530,8 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-600
 <div class="toast" id="toast"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzzpYA7pVx910vEuI3rFDAZZjn17j2KYDs8rISpIvdQPfYYAq86zEELm0irTMPAOWco9w/exec';
-const UMBRAL_PRODUCTIVIDAD = 1.0; // 100% — el cliente debe cubrir la capacidad completa de la heladera
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzzpYA7pVx910vEuI3rFDAZZjn17j2KYDs8rISpIvdQPfYYAq86zEELm0irTMPAOWco9w/exec';
+const UMBRAL_PRODUCTIVIDAD = 1.0;
 const MAX_DIAS_CENSO = 30;
 
 let activos = [], movimientos = [], clientes = [], activoFilter = 'todos';
@@ -541,24 +541,19 @@ let importPreviewData = null;
 let clRows = [];
 let checklistPreviewData = null;
 
-function today(){return new Date().toISOString().split('T')[0];}
-function daysSince(d){if(!d)return 9999;return Math.floor((new Date()-new Date(d))/86400000);}
-function fmtDate(val){
-  if(!val||val==='—') return '—';
-  const d=new Date(val);
-  if(!isNaN(d)){
-    const dd=String(d.getDate()).padStart(2,'0');
-    const mm=String(d.getMonth()+1).padStart(2,'0');
-    const yy=d.getFullYear();
+function today() { return new Date().toISOString().split('T')[0]; }
+function daysSince(d) { if (!d) return 9999; return Math.floor((new Date() - new Date(d)) / 86400000); }
+function fmtDate(val) {
+  if (!val || val === '—') return '—';
+  const d = new Date(val);
+  if (!isNaN(d)) {
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const yy = d.getFullYear();
     return `${dd}/${mm}/${yy}`;
   }
   return val;
 }
-
-// ── Modelo de activo ─────────────────────────────────────────
-// a.clienteId  → ID del cliente (ej: "CLI-001")  — clave de vínculo
-// a.cliente    → Nombre del cliente (ej: "Don Pedro") — solo display
-// Ambos se guardan en Sheet: [ID_QR, Modelo, Estado, Cliente_ID, Cliente, ...]
 
 // ── API ──────────────────────────────────────────────────────
 async function api(params) {
@@ -566,284 +561,258 @@ async function api(params) {
     const r = await fetch(SCRIPT_URL + '?' + new URLSearchParams(params.query));
     return r.json();
   }
-  const r = await fetch(SCRIPT_URL, { method:'POST', body: JSON.stringify(params.body) });
+  const r = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(params.body) });
   return r.json();
 }
 
-// Convierte cualquier representación de fecha a YYYY-MM-DD limpio
 function toISO(val) {
   if (!val) return '';
   const str = String(val).trim();
   if (!str) return '';
-  // Ya es YYYY-MM-DD
-  if (/^\d{4}-\d{2}-\d{2}/.test(str)) return str.slice(0,10);
-  // Formato argentino D/M/YYYY ...
+  if (/^\d{4}-\d{2}-\d{2}/.test(str)) return str.slice(0, 10);
   const parts = str.split(' ')[0].split('/');
   if (parts.length === 3) {
-    const [d,m,y] = parts;
-    if (y.length === 4) return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+    const [d, m, y] = parts;
+    if (y.length === 4) return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
   }
-  // Date object serializado por JS ("Mon Mar 30 2026 ...")
   const dt = new Date(str);
-  if (!isNaN(dt)) return dt.toISOString().slice(0,10);
+  if (!isNaN(dt)) return dt.toISOString().slice(0, 10);
   return '';
 }
 
 async function loadAll() {
-  setLoading(true); setSyncStatus('Sincronizando...');
+  setLoading(true);
+  setSyncStatus('Sincronizando...');
   try {
-    const res = await api({ method:'GET', query:{ action:'read' } });
+    const res = await api({ method: 'GET', query: { action: 'read' } });
     if (!res.ok) throw new Error(res.error);
 
-    clientes = (res.data.Clientes||[]).map((r,i)=>({
-      idx:i, id:r.ID, nombre:r.Nombre,
-      direccion:r.Direccion, zona:r.Zona, contacto:r.Contacto,
+    clientes = (res.data.Clientes || []).map((r, i) => ({
+      idx: i, id: r.ID, nombre: r.Nombre,
+      direccion: r.Direccion, zona: r.Zona, contacto: r.Contacto,
     }));
 
-    activos = (res.data.Activos||[]).map(r=>({
-      qr:r.ID_QR, modelo:r.Modelo, estado:r.Estado,
-      clienteId:r.Cliente_ID,
-      cliente:r.Cliente,
-      fechaEntrega:toISO(r.Fecha_Entrega),
-      ultimoCenso:toISO(r.Ultimo_Censo),
-      capacidad:parseInt(r.Capacidad)||20,
-      comprasMes:parseInt(r.Compras_Mes)||0, obs:r.Observaciones,
+    activos = (res.data.Activos || []).map(r => ({
+      qr: r.ID_QR, modelo: r.Modelo, estado: r.Estado,
+      clienteId: r.Cliente_ID,
+      cliente: r.Cliente,
+      fechaEntrega: toISO(r.Fecha_Entrega),
+      ultimoCenso: toISO(r.Ultimo_Censo),
+      capacidad: parseInt(r.Capacidad) || 20,
+      comprasMes: parseInt(r.Compras_Mes) || 0, obs: r.Observaciones,
     }));
 
-    movimientos = (res.data.Movimientos||[]).map(r=>({
-      tipo:r.Tipo, activo:r.Activo_QR,
-      clienteId:r.Cliente_ID, cliente:r.Cliente,
-      chofer:r.Responsable, fecha:toISO(r.Fecha)||r.Fecha,
-      failcode:r.Failure_Code, compras:r.Compras_Mes,
+    movimientos = (res.data.Movimientos || []).map(r => ({
+      tipo: r.Tipo, activo: r.Activo_QR,
+      clienteId: r.Cliente_ID, cliente: r.Cliente,
+      chofer: r.Responsable, fecha: toISO(r.Fecha) || r.Fecha,
+      failcode: r.Failure_Code, compras: r.Compras_Mes,
     }));
 
     renderAll();
-    setSyncStatus('Actualizado '+new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}));
-  } catch(e){ toast('Error al cargar: '+e.message,true); setSyncStatus('Error'); }
+    setSyncStatus('Actualizado ' + new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }));
+  } catch (e) { toast('Error al cargar: ' + e.message, true); setSyncStatus('Error'); }
   setLoading(false);
 }
 
 async function initSheets() {
-  await api({ method:'POST', body:{ action:'init' } });
+  await api({ method: 'POST', body: { action: 'init' } });
 }
 
-// ── Activo row helper (10 columnas) ──────────────────────────
 function activoToRow(a) {
-  return [a.qr, a.modelo, a.estado, a.clienteId||'', a.cliente||'',
-          a.fechaEntrega||'', a.ultimoCenso||'',
-          a.capacidad, a.comprasMes, a.obs||''];
+  return [a.qr, a.modelo, a.estado, a.clienteId || '', a.cliente || '',
+    a.fechaEntrega || '', a.ultimoCenso || '',
+    a.capacidad, a.comprasMes, a.obs || ''];
 }
 
-// ── Save activo ───────────────────────────────────────────────
 async function saveActivo() {
-  const qr=document.getElementById('f-qr').value.trim();
-  const modelo=document.getElementById('f-modelo').value.trim();
-  if (!qr||!modelo){toast('ID y modelo son requeridos.');return;}
-  if (activos.find(a=>a.qr===qr)){toast('Ya existe un activo con ese ID.');return;}
-  const row=[qr,modelo,'Disponible','','',
-    '',today(),parseInt(document.getElementById('f-cap').value)||20,0,
+  const qr = document.getElementById('f-qr').value.trim();
+  const modelo = document.getElementById('f-modelo').value.trim();
+  if (!qr || !modelo) { toast('ID y modelo son requeridos.'); return; }
+  if (activos.find(a => a.qr === qr)) { toast('Ya existe un activo con ese ID.'); return; }
+  const row = [qr, modelo, 'Disponible', '', '',
+    '', today(), parseInt(document.getElementById('f-cap').value) || 20, 0,
     document.getElementById('f-obs-a').value];
   setLoading(true);
   try {
-    const res=await api({method:'POST',body:{action:'append',sheet:'Activos',row}});
+    const res = await api({ method: 'POST', body: { action: 'append', sheet: 'Activos', row } });
     if (!res.ok) throw new Error(res.error);
     await loadAll(); closeModal('modal-activo');
-    ['f-qr','f-modelo','f-cap','f-anio','f-obs-a'].forEach(id=>document.getElementById(id).value='');
+    ['f-qr', 'f-modelo', 'f-cap', 'f-anio', 'f-obs-a'].forEach(id => document.getElementById(id).value = '');
     toast('Activo registrado ✓');
-  } catch(e){toast('Error: '+e.message,true);}
+  } catch (e) { toast('Error: ' + e.message, true); }
   setLoading(false);
 }
 
-// ── Save movimiento ───────────────────────────────────────────
 async function saveMovimiento() {
-  const tipo=document.getElementById('f-tipo').value;
-  const qr=document.getElementById('f-act-id').value;
-  const cliId=document.getElementById('f-cli-id').value;
-  const cliNombre=document.getElementById('f-cli').value;
-  const chofer=document.getElementById('f-chofer').value.trim()||'Sin registrar';
-  const fecha=document.getElementById('f-fecha').value||today();
-  const fail=document.getElementById('f-fail').value;
-  const compras=parseInt(document.getElementById('f-compras').value)||0;
+  const tipo = document.getElementById('f-tipo').value;
+  const qr = document.getElementById('f-act-id').value;
+  const cliId = document.getElementById('f-cli-id').value;
+  const cliNombre = document.getElementById('f-cli').value;
+  const chofer = document.getElementById('f-chofer').value.trim() || 'Sin registrar';
+  const fecha = document.getElementById('f-fecha').value || today();
+  const fail = document.getElementById('f-fail').value;
+  const compras = parseInt(document.getElementById('f-compras').value) || 0;
 
-  // Movimientos: [Tipo, Activo_QR, Cliente_ID, Cliente, Responsable, Fecha, Failure_Code, Compras_Mes]
-  const movRow=[tipo,qr,cliId,cliNombre,chofer,fecha,fail,compras];
-
-  const idx=activos.findIndex(a=>a.qr===qr);
-  let activoRow=null;
-  if (idx>=0) {
-    const a={...activos[idx]};
-    if (tipo==='Entrega'){a.estado='Entregado';a.clienteId=cliId;a.cliente=cliNombre;a.fechaEntrega=fecha;a.comprasMes=compras;}
-    if (tipo==='Retiro'){a.estado='Disponible';a.clienteId='';a.cliente='';a.fechaEntrega='';}
-    if (tipo==='Servicio técnico'){a.estado='En Servicio';a.clienteId='';a.cliente='';}
-    if (tipo==='Alta disponible'){a.estado='Disponible';a.clienteId='';a.cliente='';}
-    if (tipo==='Baja'){a.estado='Baja';a.clienteId='';a.cliente='';}
-    activoRow=activoToRow(a);
+  const movRow = [tipo, qr, cliId, cliNombre, chofer, fecha, fail, compras];
+  const idx = activos.findIndex(a => a.qr === qr);
+  let activoRow = null;
+  if (idx >= 0) {
+    const a = { ...activos[idx] };
+    if (tipo === 'Entrega') { a.estado = 'Entregado'; a.clienteId = cliId; a.cliente = cliNombre; a.fechaEntrega = fecha; a.comprasMes = compras; }
+    if (tipo === 'Retiro') { a.estado = 'Disponible'; a.clienteId = ''; a.cliente = ''; a.fechaEntrega = ''; }
+    if (tipo === 'Servicio técnico') { a.estado = 'En Servicio'; a.clienteId = ''; a.cliente = ''; }
+    if (tipo === 'Alta disponible') { a.estado = 'Disponible'; a.clienteId = ''; a.cliente = ''; }
+    if (tipo === 'Baja') { a.estado = 'Baja'; a.clienteId = ''; a.cliente = ''; }
+    activoRow = activoToRow(a);
   }
   setLoading(true);
   try {
-    await api({method:'POST',body:{action:'append',sheet:'Movimientos',row:movRow}});
-    if (activoRow) await api({method:'POST',body:{action:'update',sheet:'Activos',rowIndex:idx,row:activoRow}});
+    await api({ method: 'POST', body: { action: 'append', sheet: 'Movimientos', row: movRow } });
+    if (activoRow) await api({ method: 'POST', body: { action: 'update', sheet: 'Activos', rowIndex: idx, row: activoRow } });
     await loadAll(); closeModal('modal-mov'); clearClienteSel();
     toast('Movimiento registrado ✓');
-  } catch(e){toast('Error: '+e.message,true);}
+  } catch (e) { toast('Error: ' + e.message, true); }
   setLoading(false);
 }
 
-// ── Censo ─────────────────────────────────────────────────────
 async function guardarCenso(qr) {
-  const idx=activos.findIndex(a=>a.qr===qr);
-  if (idx<0) return;
-  const a={...activos[idx], ultimoCenso:today()};
-  const row=activoToRow(a);
-  const movRow=['Censo',qr,a.clienteId||'',a.cliente||'','Preventista',today(),'',''];
+  const idx = activos.findIndex(a => a.qr === qr);
+  if (idx < 0) return;
+  const a = { ...activos[idx], ultimoCenso: today() };
+  const row = activoToRow(a);
+  const movRow = ['Censo', qr, a.clienteId || '', a.cliente || '', 'Preventista', today(), '', ''];
   setLoading(true);
   try {
-    await api({method:'POST',body:{action:'update',sheet:'Activos',rowIndex:idx,row}});
-    await api({method:'POST',body:{action:'append',sheet:'Movimientos',row:movRow}});
+    await api({ method: 'POST', body: { action: 'update', sheet: 'Activos', rowIndex: idx, row } });
+    await api({ method: 'POST', body: { action: 'append', sheet: 'Movimientos', row: movRow } });
     await loadAll(); toast('Censo registrado ✓');
-  } catch(e){toast('Error: '+e.message,true);}
+  } catch (e) { toast('Error: ' + e.message, true); }
   setLoading(false);
 }
 
-// ── Clientes ──────────────────────────────────────────────────
-function abrirModalCliente(idx=null) {
-  editingCliIdx=idx;
-  document.getElementById('modal-cli-title').textContent=idx!==null?'Editar cliente':'Nuevo cliente';
-  if (idx!==null) {
-    const c=clientes[idx];
-    document.getElementById('fc-id').value=c.id;
-    document.getElementById('fc-id').disabled=true;
-    document.getElementById('fc-nombre').value=c.nombre;
-    document.getElementById('fc-dir').value=c.direccion||'';
-    document.getElementById('fc-zona').value=c.zona||'';
-    document.getElementById('fc-tel').value=c.contacto||'';
+function abrirModalCliente(idx = null) {
+  editingCliIdx = idx;
+  document.getElementById('modal-cli-title').textContent = idx !== null ? 'Editar cliente' : 'Nuevo cliente';
+  if (idx !== null) {
+    const c = clientes[idx];
+    document.getElementById('fc-id').value = c.id;
+    document.getElementById('fc-id').disabled = true;
+    document.getElementById('fc-nombre').value = c.nombre;
+    document.getElementById('fc-dir').value = c.direccion || '';
+    document.getElementById('fc-zona').value = c.zona || '';
+    document.getElementById('fc-tel').value = c.contacto || '';
   } else {
-    ['fc-id','fc-nombre','fc-dir','fc-zona','fc-tel'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('fc-id').disabled=false;
+    ['fc-id', 'fc-nombre', 'fc-dir', 'fc-zona', 'fc-tel'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('fc-id').disabled = false;
   }
-  showPage('clientes',document.querySelectorAll('.nav-item')[2]);
-  const el=document.getElementById('modal-cliente');
+  showPage('clientes', document.querySelectorAll('.nav-item')[2]);
+  const el = document.getElementById('modal-cliente');
   el.classList.add('open');
-  el.scrollIntoView({behavior:'smooth',block:'start'});
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 async function saveCliente() {
-  const id=document.getElementById('fc-id').value.trim();
-  const nombre=document.getElementById('fc-nombre').value.trim();
-  if (!id||!nombre){toast('Código y nombre son requeridos.');return;}
-  const row=[id,nombre,
+  const id = document.getElementById('fc-id').value.trim();
+  const nombre = document.getElementById('fc-nombre').value.trim();
+  if (!id || !nombre) { toast('Código y nombre son requeridos.'); return; }
+  const row = [id, nombre,
     document.getElementById('fc-dir').value.trim(),
     document.getElementById('fc-zona').value.trim(),
-    document.getElementById('fc-tel').value.trim(),'true'];
+    document.getElementById('fc-tel').value.trim(), 'true'];
   setLoading(true);
   try {
-    if (editingCliIdx!==null) {
-      await api({method:'POST',body:{action:'update',sheet:'Clientes',rowIndex:editingCliIdx,row}});
-      // Si cambió el nombre, actualizar todos los activos que tengan ese clienteId
-      const old=clientes[editingCliIdx];
-      if (old.nombre!==nombre) {
-        const afectados=activos.filter(a=>a.clienteId===id);
+    if (editingCliIdx !== null) {
+      await api({ method: 'POST', body: { action: 'update', sheet: 'Clientes', rowIndex: editingCliIdx, row } });
+      const old = clientes[editingCliIdx];
+      if (old.nombre !== nombre) {
+        const afectados = activos.filter(a => a.clienteId === id);
         for (const a of afectados) {
-          const updated={...a,cliente:nombre};
-          const ai=activos.findIndex(x=>x.qr===a.qr);
-          await api({method:'POST',body:{action:'update',sheet:'Activos',rowIndex:ai,row:activoToRow(updated)}});
+          const updated = { ...a, cliente: nombre };
+          const ai = activos.findIndex(x => x.qr === a.qr);
+          await api({ method: 'POST', body: { action: 'update', sheet: 'Activos', rowIndex: ai, row: activoToRow(updated) } });
         }
       }
       toast('Cliente actualizado ✓');
     } else {
-      if (clientes.find(c=>c.id===id)){toast('Ya existe un cliente con ese código.');setLoading(false);return;}
-      await api({method:'POST',body:{action:'append',sheet:'Clientes',row}});
+      if (clientes.find(c => c.id === id)) { toast('Ya existe un cliente con ese código.'); setLoading(false); return; }
+      await api({ method: 'POST', body: { action: 'append', sheet: 'Clientes', row } });
       toast('Cliente registrado ✓');
     }
     await loadAll(); closeModal('modal-cliente');
-  } catch(e){toast('Error: '+e.message,true);}
+  } catch (e) { toast('Error: ' + e.message, true); }
   setLoading(false);
 }
 
-// ── Autocomplete ──────────────────────────────────────────────
 function filtrarAC(q) {
-  const list=document.getElementById('ac-list');
-  const matches=clientes.filter(c=>
-    c.id.toLowerCase().includes(q.toLowerCase())||
+  const list = document.getElementById('ac-list');
+  const matches = clientes.filter(c =>
+    c.id.toLowerCase().includes(q.toLowerCase()) ||
     c.nombre.toLowerCase().includes(q.toLowerCase())
-  ).slice(0,8);
-  list.innerHTML=matches.map(c=>`
+  ).slice(0, 8);
+  list.innerHTML = matches.map(c => `
     <div class="ac-item" onmousedown="selectCliente('${c.id}')">
       <span style="font-family:var(--mono);font-size:12px;font-weight:500">${c.id}</span>
       <span style="color:var(--text2);margin-left:8px">${c.nombre}</span>
-      <div class="ac-sub">${[c.direccion,c.zona].filter(Boolean).join(' · ')}</div>
+      <div class="ac-sub">${[c.direccion, c.zona].filter(Boolean).join(' · ')}</div>
     </div>`).join('');
-  list.classList.toggle('open',matches.length>0);
+  list.classList.toggle('open', matches.length > 0);
 }
 
 function selectCliente(id) {
-  const c=clientes.find(x=>x.id===id);
+  const c = clientes.find(x => x.id === id);
   if (!c) return;
-  document.getElementById('f-cli-id').value=c.id;
-  document.getElementById('f-cli').value=c.nombre;
-  document.getElementById('sel-client-name').textContent=c.id+' — '+c.nombre;
-  document.getElementById('sel-client-sub').textContent=[c.direccion,c.zona,c.contacto].filter(Boolean).join(' · ');
-  document.getElementById('sel-client-display').style.display='block';
-  document.getElementById('cli-ac-wrap').style.display='none';
+  document.getElementById('f-cli-id').value = c.id;
+  document.getElementById('f-cli').value = c.nombre;
+  document.getElementById('sel-client-name').textContent = c.id + ' — ' + c.nombre;
+  document.getElementById('sel-client-sub').textContent = [c.direccion, c.zona, c.contacto].filter(Boolean).join(' · ');
+  document.getElementById('sel-client-display').style.display = 'block';
+  document.getElementById('cli-ac-wrap').style.display = 'none';
   cerrarAC();
 }
 
 function clearClienteSel() {
-  document.getElementById('f-cli-id').value='';
-  document.getElementById('f-cli').value='';
-  document.getElementById('f-cli-search').value='';
-  document.getElementById('sel-client-display').style.display='none';
-  document.getElementById('cli-ac-wrap').style.display='block';
+  document.getElementById('f-cli-id').value = '';
+  document.getElementById('f-cli').value = '';
+  document.getElementById('f-cli-search').value = '';
+  document.getElementById('sel-client-display').style.display = 'none';
+  document.getElementById('cli-ac-wrap').style.display = 'block';
 }
 
-function cerrarAC(){document.getElementById('ac-list').classList.remove('open');}
+function cerrarAC() { document.getElementById('ac-list').classList.remove('open'); }
 
-// ── Importar compras (Excel) ──────────────────────────────────
+// ── IMPORTAR COMPRAS ──────────────────────────────────────────
 function handleDrop(e) {
-  e.preventDefault(); 
+  e.preventDefault();
   document.getElementById('drop-zone').classList.remove('over');
-  const f = e.dataTransfer.files[0]; 
-  if(f) handleFile(f);
+  const f = e.dataTransfer.files[0];
+  if (f) handleFile(f);
 }
 
 function handleFile(file) {
   if (!file) return;
-  
   const reader = new FileReader();
   reader.onload = e => {
     try {
       const wb = XLSX.read(e.target.result, { type: 'array' });
       const ws = wb.Sheets[wb.SheetNames[0]];
       const data = XLSX.utils.sheet_to_json(ws, { raw: false, defval: '' });
-      
-      if (!data.length) {
-        toast('El archivo parece vacío.', true);
-        return;
-      }
-      
+      if (!data.length) { toast('El archivo parece vacío.', true); return; }
+
       csvHeaders = Object.keys(data[0]);
       csvRows = data;
-      
-      // Generar opciones para los selects
+
       const opts = csvHeaders.map(h => `<option value="${h.replace(/"/g, '&quot;')}">${escapeHtml(h)}</option>`).join('');
-      ['map-cliente', 'map-cantidad'].forEach(id => {
-        document.getElementById(id).innerHTML = opts;
-      });
+      ['map-cliente', 'map-cantidad'].forEach(id => { document.getElementById(id).innerHTML = opts; });
       document.getElementById('map-periodo').innerHTML = '<option value="">— no incluir —</option>' + opts;
-      
-      // Autodetección mejorada
+
       autoDetectMejorado('map-cliente', ['cliente_id', 'clienteid', 'id_cliente', 'cliente', 'client', 'codigo', 'code']);
       autoDetectMejorado('map-cantidad', ['cantidad', 'cant', 'bultos', 'unidades', 'units', 'qty', 'total', 'compras', 'ventas']);
-      
-      document.getElementById('file-info').textContent = 
-        `📊 ${file.name} — ${data.length} registros, ${csvHeaders.length} columnas`;
-      
+
+      document.getElementById('file-info').textContent = `📊 ${file.name} — ${data.length} registros, ${csvHeaders.length} columnas`;
       updatePreview();
       goStep(2);
-      
-    } catch (error) {
-      toast('Error al leer el archivo: ' + error.message, true);
-    }
+    } catch (error) { toast('Error al leer el archivo: ' + error.message, true); }
   };
   reader.readAsArrayBuffer(file);
 }
@@ -851,21 +820,16 @@ function handleFile(file) {
 function autoDetectMejorado(selectId, keywords) {
   const sel = document.getElementById(selectId);
   if (!sel) return;
-  
-  // Primero buscar coincidencia exacta
   let match = csvHeaders.find(h => {
     const cleanH = h.trim().toLowerCase();
     return keywords.some(k => cleanH === k.toLowerCase());
   });
-  
-  // Si no hay coincidencia exacta, buscar parcial
   if (!match) {
     match = csvHeaders.find(h => {
       const cleanH = h.trim().toLowerCase();
       return keywords.some(k => cleanH.includes(k.toLowerCase()));
     });
   }
-  
   if (match) sel.value = match;
 }
 
@@ -874,374 +838,378 @@ function setUnit(u) {
   document.getElementById('unit-bultos').classList.toggle('active', u === 'bultos');
   document.getElementById('unit-unidades').classList.toggle('active', u === 'unidades');
   const conversionWrap = document.getElementById('conversion-wrap');
-  if (u === 'bultos') {
-    conversionWrap.style.display = 'flex';
-  } else {
-    conversionWrap.style.display = 'none';
-  }
+  if (u === 'bultos') conversionWrap.style.display = 'flex';
+  else conversionWrap.style.display = 'none';
   updatePreview();
 }
 
 function updatePreview() {
-  // Solo actualiza la previsualización si hay datos, no hace nada más
   const hint = document.getElementById('conversion-hint');
   if (csvUnit === 'bultos') {
     const upb = parseInt(document.getElementById('unid-por-bulto').value) || 12;
     hint.textContent = `→ 1 bulto = ${upb} cajones (se multiplica)`;
     hint.style.display = 'block';
-  } else {
-    hint.style.display = 'none';
-  }
+  } else hint.style.display = 'none';
 }
 
 function showPreview() {
   const colCliente = document.getElementById('map-cliente').value;
   const colCantidad = document.getElementById('map-cantidad').value;
-  
-  if (!colCliente || !colCantidad) {
-    toast('Seleccioná las columnas requeridas.', true);
-    return;
-  }
-  
+  if (!colCliente || !colCantidad) { toast('Seleccioná las columnas requeridas.', true); return; }
+
   const upb = parseInt(document.getElementById('unid-por-bulto').value) || 12;
-  
-  // Función para resolver cliente por ID o nombre
   const resolveClientId = (key) => {
     if (!key) return null;
     const k = key.toString().trim().toLowerCase();
-    
-    // Buscar por ID exacto
     const byId = clientes.find(c => c.id.toLowerCase() === k);
     if (byId) return byId.id;
-    
-    // Buscar por nombre exacto
     const byName = clientes.find(c => c.nombre.toLowerCase() === k);
     if (byName) return byName.id;
-    
-    // Buscar por nombre parcial (último recurso)
     const byPartial = clientes.find(c => c.nombre.toLowerCase().includes(k));
     if (byPartial) return byPartial.id;
-    
     return null;
   };
-  
-  // Agrupar por cliente
+
   const agrupado = {};
   const erroresParseo = [];
-  
   csvRows.forEach((row, idx) => {
     const key = (row[colCliente] || '').toString().trim();
     if (!key) return;
-    
     let raw = 0;
     const cantidadStr = (row[colCantidad] || '0').toString().trim();
-    
-    // Manejar diferentes formatos de número (coma decimal, puntos, etc.)
     try {
       let cleanStr = cantidadStr.replace(/\./g, '').replace(',', '.');
       raw = parseFloat(cleanStr);
       if (isNaN(raw)) raw = 0;
-    } catch (e) {
-      erroresParseo.push(`Fila ${idx + 2}: "${cantidadStr}" no es un número válido`);
-      raw = 0;
-    }
-    
-    // CORRECCIÓN CRÍTICA: Si es bultos, MULTIPLICAR, no dividir
+    } catch (e) { erroresParseo.push(`Fila ${idx + 2}: "${cantidadStr}" no es un número válido`); raw = 0; }
     const cajones = csvUnit === 'bultos' ? raw * upb : raw;
-    
-    if (!agrupado[key]) {
-      agrupado[key] = { total: 0, filas: [] };
-    }
+    if (!agrupado[key]) agrupado[key] = { total: 0, filas: [] };
     agrupado[key].total += cajones;
     agrupado[key].filas.push(idx + 2);
   });
-  
-  if (erroresParseo.length > 0) {
-    toast(`Errores de parseo:\n${erroresParseo.slice(0, 3).join('\n')}`, true);
-  }
-  
-  // Activos entregados por clienteId
+  if (erroresParseo.length > 0) toast(`Errores de parseo:\n${erroresParseo.slice(0, 3).join('\n')}`, true);
+
   const activosPorCliente = {};
-  activos.forEach(a => {
-    if (a.estado === 'Entregado' && a.clienteId) {
-      if (!activosPorCliente[a.clienteId]) activosPorCliente[a.clienteId] = [];
-      activosPorCliente[a.clienteId].push(a);
-    }
-  });
-  
+  activos.forEach(a => { if (a.estado === 'Entregado' && a.clienteId) { if (!activosPorCliente[a.clienteId]) activosPorCliente[a.clienteId] = []; activosPorCliente[a.clienteId].push(a); } });
+
   const entries = Object.entries(agrupado);
-  const matched = [];
-  const noMatch = [];
-  
+  const matched = [], noMatch = [];
   entries.forEach(([key, data]) => {
     const clientId = resolveClientId(key);
-    if (clientId && activosPorCliente[clientId]) {
-      matched.push({ key, clientId, total: data.total, activos: activosPorCliente[clientId] });
-    } else {
-      noMatch.push({ key, total: data.total });
-    }
+    if (clientId && activosPorCliente[clientId]) matched.push({ key, clientId, total: data.total, activos: activosPorCliente[clientId] });
+    else noMatch.push({ key, total: data.total });
   });
-  
-  // Generar previsualización
+
   const previewBody = entries.slice(0, 15).map(([key, data]) => {
     const clientId = resolveClientId(key);
     const c = clientId ? clientes.find(x => x.id === clientId) : null;
     const tieneActivo = clientId && activosPorCliente[clientId];
     const estadoClass = tieneActivo ? 'match' : 'no-match';
     const estadoText = tieneActivo ? '✓ Actualizará' : (c ? '✗ Sin heladera entregada' : '✗ Cliente no encontrado');
-    
-    return `实践
-      <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(key)}</td>
-      <td>${c ? escapeHtml(c.nombre) : '—'}</td>
-      <td>${Math.round(data.total * 10) / 10}</td>
-      <td class="${estadoClass}">${estadoText}</td>
-     `;
+    return `<tr><td style="max-width:200px;">${escapeHtml(key)}</td><td>${c ? escapeHtml(c.nombre) : '—'}</td><td>${Math.round(data.total * 10) / 10}</td><td class="${estadoClass}">${estadoText}</td></tr>`;
   }).join('');
-  
-  document.getElementById('prev-head').innerHTML = 
-    `<tr><th>Clave CSV</th><th>Cliente encontrado</th><th>Cajones</th><th>Estado</th></tr>`;
+
+  document.getElementById('prev-head').innerHTML = `<tr><th>Clave CSV</th><th>Cliente encontrado</th><th>Cajones</th><th>Estado</th></tr>`;
   document.getElementById('prev-body').innerHTML = previewBody;
-  
-  const totalClientes = entries.length;
-  const actualizarCount = matched.length;
-  
-  document.getElementById('preview-info').innerHTML = 
-    `<strong>${totalClientes}</strong> clientes en el CSV · ` +
-    `<strong>${actualizarCount}</strong> con heladeras entregadas serán actualizados · ` +
-    `<strong>${totalClientes - actualizarCount}</strong> serán ignorados`;
-  
+  document.getElementById('preview-info').innerHTML = `<strong>${entries.length}</strong> clientes en el CSV · <strong>${matched.length}</strong> con heladeras entregadas · <strong>${entries.length - matched.length}</strong> ignorados`;
+
   const warnEl = document.getElementById('preview-warn');
-  if (noMatch.length > 0) {
-    warnEl.style.display = 'block';
-    const noMatchList = noMatch.slice(0, 5).map(({key}) => escapeHtml(key)).join(', ');
-    warnEl.innerHTML = `<strong>⚠️ ${noMatch.length} clientes sin heladera entregada (ignorados):</strong><br>${noMatchList}${noMatch.length > 5 ? '...' : ''}`;
-  } else {
-    warnEl.style.display = 'none';
-  }
-  
-  // Guardar datos para la importación
-  importPreviewData = {
-    agrupado,
-    resolveClientId,
-    activosPorCliente,
-    upb,
-    colCliente,
-    colCantidad
-  };
-  
+  if (noMatch.length > 0) { warnEl.style.display = 'block'; warnEl.innerHTML = `<strong>⚠️ ${noMatch.length} clientes sin heladera:</strong><br>${noMatch.slice(0, 5).map(({ key }) => escapeHtml(key)).join(', ')}${noMatch.length > 5 ? '...' : ''}`; }
+  else warnEl.style.display = 'none';
+
+  importPreviewData = { agrupado, resolveClientId, activosPorCliente, upb, colCliente, colCantidad };
   goStep(3);
 }
 
 async function applyImport() {
-  if (!importPreviewData) {
-    toast('No hay datos para importar.', true);
-    return;
-  }
-  
+  if (!importPreviewData) { toast('No hay datos para importar.', true); return; }
   const { agrupado, resolveClientId, activosPorCliente } = importPreviewData;
   const colPeriodo = document.getElementById('map-periodo').value;
-  
-  // Determinar período
   let periodo = today();
   if (colPeriodo) {
     const periodosUnicos = [...new Set(csvRows.map(r => r[colPeriodo]).filter(Boolean))];
-    if (periodosUnicos.length === 1) {
-      periodo = periodosUnicos[0];
-    } else if (periodosUnicos.length > 1) {
-      toast(`Múltiples períodos detectados. Se usará la fecha actual: ${periodo}`, false);
-    }
+    if (periodosUnicos.length === 1) periodo = periodosUnicos[0];
+    else if (periodosUnicos.length > 1) toast(`Múltiples períodos. Se usará: ${periodo}`, false);
   }
-  
-  // Preparar actualizaciones
+
   const updates = [];
-  const errores = [];
-  
   for (const [key, data] of Object.entries(agrupado)) {
     const clientId = resolveClientId(key);
     if (!clientId || !activosPorCliente[clientId]) continue;
-    
     const cajones = Math.round(data.total * 10) / 10;
-    
-    // Actualizar todos los activos de este cliente
     for (const activo of activosPorCliente[clientId]) {
       const idx = activos.findIndex(a => a.qr === activo.qr);
-      if (idx >= 0) {
-        updates.push({
-          idx,
-          activo: activo,
-          cajones,
-          periodo,
-          key,
-          clientId
-        });
-      }
+      if (idx >= 0) updates.push({ idx, activo, cajones, periodo, key, clientId });
     }
   }
-  
-  if (!updates.length) {
-    toast('No hay actualizaciones para aplicar.', true);
-    return;
-  }
-  
+  if (!updates.length) { toast('No hay actualizaciones para aplicar.', true); return; }
+
   setLoading(true);
   let ok = 0, err = 0;
-  const BATCH_SIZE = 3; // Procesar de a 3 para no saturar
-  
+  const BATCH_SIZE = 3;
   for (let i = 0; i < updates.length; i += BATCH_SIZE) {
     const batch = updates.slice(i, i + BATCH_SIZE);
     const promises = batch.map(async (u) => {
       try {
         const a = { ...u.activo, comprasMes: u.cajones };
-        const movRow = [
-          'Actualización compras',
-          a.qr,
-          u.clientId,
-          a.cliente || '',
-          'Importación CSV',
-          u.periodo,
-          '',
-          u.cajones
-        ];
-        
+        const movRow = ['Actualización compras', a.qr, u.clientId, a.cliente || '', 'Importación CSV', u.periodo, '', u.cajones];
         await api({ method: 'POST', body: { action: 'update', sheet: 'Activos', rowIndex: u.idx, row: activoToRow(a) } });
         await api({ method: 'POST', body: { action: 'append', sheet: 'Movimientos', row: movRow } });
         return true;
-      } catch (e) {
-        console.error(`Error actualizando ${u.activo.qr}:`, e);
-        return false;
-      }
+      } catch (e) { console.error(`Error ${u.activo.qr}:`, e); return false; }
     });
-    
     const results = await Promise.all(promises);
     ok += results.filter(r => r === true).length;
     err += results.filter(r => r === false).length;
   }
-  
   await loadAll();
-  
-  const resultTitle = document.getElementById('result-title');
-  const resultSub = document.getElementById('result-sub');
-  
-  resultTitle.textContent = `✅ ${ok} activos actualizados correctamente`;
-  if (err > 0) {
-    resultSub.textContent = `⚠️ ${err} errores. Período: ${periodo}. Revisá la consola para más detalles.`;
-  } else {
-    resultSub.textContent = `Período: ${periodo}. Se actualizaron ${ok} heladeras.`;
-  }
-  
+  document.getElementById('result-title').textContent = `✅ ${ok} activos actualizados`;
+  document.getElementById('result-sub').textContent = err ? `⚠️ ${err} errores. Período: ${periodo}` : `Período: ${periodo}. ${ok} heladeras actualizadas.`;
   goStep(4);
   setLoading(false);
-  
-  // Limpiar datos temporales
   importPreviewData = null;
 }
 
-function goStep(n) {
-  for (let i = 1; i <= 4; i++) {
-    const el = document.getElementById('step' + i);
-    if (el) el.style.display = i === n ? 'block' : 'none';
-  }
-}
+function goStep(n) { for (let i = 1; i <= 4; i++) { const el = document.getElementById('step' + i); if (el) el.style.display = i === n ? 'block' : 'none'; } }
+function resetImport() { csvRows = []; csvHeaders = []; csvUnit = 'bultos'; importPreviewData = null; document.getElementById('csv-input').value = ''; document.getElementById('unid-por-bulto').value = '12'; document.getElementById('unit-bultos').classList.add('active'); document.getElementById('unit-unidades').classList.remove('active'); document.getElementById('conversion-wrap').style.display = 'flex'; goStep(1); }
+function escapeHtml(str) { if (!str) return ''; return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
 
-function resetImport() {
-  csvRows = [];
-  csvHeaders = [];
-  csvUnit = 'bultos';
-  importPreviewData = null;
-  
-  const fileInput = document.getElementById('csv-input');
-  if (fileInput) fileInput.value = '';
-  
-  const upbInput = document.getElementById('unid-por-bulto');
-  if (upbInput) upbInput.value = '12';
-  
-  const unitBultos = document.getElementById('unit-bultos');
-  const unitUnidades = document.getElementById('unit-unidades');
-  if (unitBultos) unitBultos.classList.add('active');
-  if (unitUnidades) unitUnidades.classList.remove('active');
-  
-  const conversionWrap = document.getElementById('conversion-wrap');
-  if (conversionWrap) conversionWrap.style.display = 'flex';
-  
-  goStep(1);
-}
-
-function escapeHtml(str) {
-  if (!str) return '';
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
-// ── Render ────────────────────────────────────────────────────
+// ── RENDER ────────────────────────────────────────────────────
 function hasAlert(a) {
-  if (a.estado==='Baja'||a.estado!=='Entregado') return false;
-  if (daysSince(a.ultimoCenso)>MAX_DIAS_CENSO) return `Sin censo hace +${MAX_DIAS_CENSO} días`;
-  const minimo=Math.round(a.capacidad*UMBRAL_PRODUCTIVIDAD);
-  if (a.comprasMes<minimo) return `Compras bajo mínimo (${a.comprasMes}/${minimo} caj)`;
+  if (a.estado === 'Baja' || a.estado !== 'Entregado') return false;
+  if (daysSince(a.ultimoCenso) > MAX_DIAS_CENSO) return `Sin censo hace +${MAX_DIAS_CENSO} días`;
+  const minimo = Math.round(a.capacidad * UMBRAL_PRODUCTIVIDAD);
+  if (a.comprasMes < minimo) return `Compras bajo mínimo (${a.comprasMes}/${minimo} caj)`;
   return false;
 }
-function badgeEstado(e){
-  const m={Disponible:'b-dis',Entregado:'b-ent','En Servicio':'b-srv',Baja:'b-baj'};
-  return `<span class="badge ${m[e]||'b-baj'}">${e}</span>`;
-}
-function prodBar(c,cap){
-  const pct=Math.min(100,Math.round((c/cap)*100));
-  const cls=pct>=80?'pg':pct>=50?'pw':'pb';
-  return `<div class="prod-wrap"><div class="prod-bar"><div class="prod-fill ${cls}" style="width:${pct}%"></div></div><span style="font-size:11px;color:var(--text3)">${pct}%</span></div>`;
-}
-function dotCls(t){
-  if(t==='Entrega')return 'de';if(t==='Retiro'||t==='Baja')return 'dr';
-  if(t&&t.includes('ervicio'))return 'ds';return 'dc';
-}
-function tlItem(m){
-  const nombre=m.cliente||m.clienteId||'Sin cliente';
-  return `<div class="tl-item"><div class="tl-dot ${dotCls(m.tipo)}"></div><div><div class="tl-title">${m.tipo} — <span class="qr-tag">${m.activo}</span></div><div class="tl-sub">${nombre} · ${m.chofer} · ${m.fecha}${m.failcode?' · '+m.failcode:''}</div></div></div>`;
-}
+function badgeEstado(e) { const m = { Disponible: 'b-dis', Entregado: 'b-ent', 'En Servicio': 'b-srv', Baja: 'b-baj' }; return `<span class="badge ${m[e] || 'b-baj'}">${e}</span>`; }
+function prodBar(c, cap) { const pct = Math.min(100, Math.round((c / cap) * 100)); const cls = pct >= 80 ? 'pg' : pct >= 50 ? 'pw' : 'pb'; return `<div class="prod-wrap"><div class="prod-bar"><div class="prod-fill ${cls}" style="width:${pct}%"></div></div><span style="font-size:11px;color:var(--text3)">${pct}%</span></div>`; }
+function dotCls(t) { if (t === 'Entrega') return 'de'; if (t === 'Retiro' || t === 'Baja') return 'dr'; if (t && t.includes('ervicio')) return 'ds'; return 'dc'; }
+function tlItem(m) { const nombre = m.cliente || m.clienteId || 'Sin cliente'; return `<div class="tl-item"><div class="tl-dot ${dotCls(m.tipo)}"></div><div><div class="tl-title">${m.tipo} — <span class="qr-tag">${m.activo}</span></div><div class="tl-sub">${nombre} · ${m.chofer} · ${m.fecha}${m.failcode ? ' · ' + m.failcode : ''}</div></div></div>`; }
 
-function renderDashboard(){
-  const alts=activos.filter(a=>hasAlert(a));
-  document.getElementById('m-total').textContent=activos.length;
-  document.getElementById('m-ent').textContent=activos.filter(a=>a.estado==='Entregado').length;
-  document.getElementById('m-dis').textContent=activos.filter(a=>a.estado==='Disponible').length;
-  document.getElementById('m-srv').textContent=activos.filter(a=>a.estado==='En Servicio').length;
-  document.getElementById('m-baj').textContent=activos.filter(a=>a.estado==='Baja').length;
-  document.getElementById('m-alt-badge').textContent=alts.length?`⚠ ${alts.length} alerta${alts.length!==1?'s':''}`: '✓ Sin alertas';
-  document.getElementById('m-alt-badge').className=alts.length?'badge b-alt':'badge b-ok';
-  const banner=document.getElementById('alert-banner');
-  alts.length?banner.classList.add('on'):banner.classList.remove('on');
-  if(alts.length) document.getElementById('alert-text').textContent=`${alts.length} activo(s) requieren atención.`;
-  document.getElementById('dash-alerts').innerHTML=alts.length
-    ?alts.map(a=>`<tr class="alert-row"><td><span class="qr-tag">${a.qr}</span></td><td>${a.modelo}</td><td>${a.clienteId?`<span class="qr-tag">${a.clienteId}</span> `:''} ${a.cliente||'—'}</td><td><span class="badge b-alt">${hasAlert(a)}</span></td><td>${fmtDate(a.ultimoCenso)}</td></tr>`).join('')
-    :'<tr><td colspan="5" class="empty-state">Sin alertas activas ✓</td></tr>';
+function renderDashboard() {
+  const alts = activos.filter(a => hasAlert(a));
+  document.getElementById('m-total').textContent = activos.length;
+  document.getElementById('m-ent').textContent = activos.filter(a => a.estado === 'Entregado').length;
+  document.getElementById('m-dis').textContent = activos.filter(a => a.estado === 'Disponible').length;
+  document.getElementById('m-srv').textContent = activos.filter(a => a.estado === 'En Servicio').length;
+  document.getElementById('m-baj').textContent = activos.filter(a => a.estado === 'Baja').length;
+  document.getElementById('m-alt-badge').textContent = alts.length ? `⚠ ${alts.length} alerta${alts.length !== 1 ? 's' : ''}` : '✓ Sin alertas';
+  document.getElementById('m-alt-badge').className = alts.length ? 'badge b-alt' : 'badge b-ok';
+  const banner = document.getElementById('alert-banner');
+  alts.length ? banner.classList.add('on') : banner.classList.remove('on');
+  if (alts.length) document.getElementById('alert-text').textContent = `${alts.length} activo(s) requieren atención.`;
+  document.getElementById('dash-alerts').innerHTML = alts.length ? alts.map(a => `<tr class="alert-row"><td><span class="qr-tag">${a.qr}</span></td><td>${a.modelo}</td><td>${a.clienteId ? `<span class="qr-tag">${a.clienteId}</span> ` : ''}${a.cliente || '—'}</td><td><span class="badge b-alt">${hasAlert(a)}</span></td><td>${fmtDate(a.ultimoCenso)}</td></tr>`).join('') : '<tr><td colspan="5" class="empty-state">Sin alertas activas ✓</td></tr>';
   renderDashMovimientos();
 }
 
-function renderDashMovimientos(){
-  const desde=document.getElementById('dash-desde').value;
-  const hasta=document.getElementById('dash-hasta').value;
-  let lista=[...movimientos].reverse();
-  if(desde) lista=lista.filter(m=>m.fecha&&m.fecha>=desde);
-  if(hasta) lista=lista.filter(m=>m.fecha&&m.fecha<=hasta);
-  if(!desde&&!hasta) lista=lista.slice(0,20);
-  document.getElementById('dash-tl').innerHTML=lista.length
-    ?lista.map(tlItem).join('')
-    :'<div class="empty-state">Sin movimientos en el período seleccionado.</div>';
+function renderDashMovimientos() {
+  const desde = document.getElementById('dash-desde').value;
+  const hasta = document.getElementById('dash-hasta').value;
+  let lista = [...movimientos].reverse();
+  if (desde) lista = lista.filter(m => m.fecha && m.fecha >= desde);
+  if (hasta) lista = lista.filter(m => m.fecha && m.fecha <= hasta);
+  if (!desde && !hasta) lista = lista.slice(0, 20);
+  document.getElementById('dash-tl').innerHTML = lista.length ? lista.map(tlItem).join('') : '<div class="empty-state">Sin movimientos en el período seleccionado.</div>';
 }
 
-function clearDashFiltro(){
-  document.getElementById('dash-desde').value='';
-  document.getElementById('dash-hasta').value='';
-  renderDashMovimientos();
+function clearDashFiltro() { document.getElementById('dash-desde').value = ''; document.getElementById('dash-hasta').value = ''; renderDashMovimientos(); }
+
+function renderActivos() {
+  const q = (document.getElementById('search-a').value || '').toLowerCase();
+  const list = activos.filter(a => {
+    if (activoFilter !== 'todos' && a.estado !== activoFilter) return false;
+    if (q && !a.qr.toLowerCase().includes(q) && !a.modelo.toLowerCase().includes(q) && !(a.cliente || '').toLowerCase().includes(q) && !(a.clienteId || '').toLowerCase().includes(q)) return false;
+    return true;
+  });
+  document.getElementById('activos-body').innerHTML = list.length ? list.map(a => { const al = hasAlert(a); return `<tr ${al ? 'class="alert-row"' : ''}><td><span class="qr-tag">${a.qr}</span></td><td>${a.modelo}</td><td>${badgeEstado(a.estado)}</td><td>${a.cliente || '—'}${a.clienteId ? ` <span class="qr-tag">${a.clienteId}</span>` : ''}</td><td>${fmtDate(a.fechaEntrega)}</td><td>${fmtDate(a.ultimoCenso)} ${al ? `<span class="badge b-alt" style="font-size:10px;margin-left:4px">!</span>` : ''}</td><td>${a.estado === 'Entregado' ? prodBar(a.comprasMes, a.capacidad) : '—'}</td><td></td></tr>`; }).join('') : '<tr><td colspan="8" class="empty-state">Sin resultados.</td></tr>';
 }
 
-function renderActivos(){
-  const q=(document.getElementById('search-a').value||'').toLowerCase();
-  const list=activos.filter(a=>{
-    if(activoFilter!=='todos'&&a.estado!==activoFilter)
+function renderClientes() {
+  const q = (document.getElementById('search-cli').value || '').toLowerCase();
+  const list = clientes.filter(c => !q || c.nombre.toLowerCase().includes(q) || c.id.toLowerCase().includes(q) || (c.zona || '').toLowerCase().includes(q));
+  const tbody = document.getElementById('clientes-list');
+  if (!list.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Sin clientes. Usá "+ Nuevo cliente" para agregar.</td></tr>'; return; }
+  const helsMap = {};
+  activos.filter(a => a.estado === 'Entregado' && a.clienteId).forEach(a => { helsMap[a.clienteId] = (helsMap[a.clienteId] || 0) + 1; });
+  tbody.innerHTML = list.map(c => { const hels = helsMap[c.id] || 0; return `<tr><td><span class="qr-tag">${c.id}</span></td><td style="font-weight:500">${c.nombre}</td><td style="color:var(--text2)">${c.direccion || '—'}</td><td style="color:var(--text2)">${c.contacto || '—'}</td><td style="color:var(--text2)">${c.zona || '—'}</td><td><span class="badge b-ent">🧊 ${hels}</span></td><td><button class="btn btn-sm" onclick="abrirModalCliente(${c.idx})">Editar</button></td></tr>`; }).join('');
+}
+
+function renderMovimientos() { document.getElementById('all-mov').innerHTML = [...movimientos].reverse().map(tlItem).join('') || '<div class="empty-state">Sin movimientos.</div>'; }
+
+function renderChecklist() {
+  const q = (document.getElementById('search-censo').value || '').toLowerCase();
+  const censos = [...movimientos].filter(m => m.tipo === 'Censo').filter(m => !q || (m.activo || '').toLowerCase().includes(q) || (m.clienteId || '').toLowerCase().includes(q) || (m.cliente || '').toLowerCase().includes(q) || (m.chofer || '').toLowerCase().includes(q)).reverse();
+  const tbody = document.getElementById('checklist-body');
+  if (!censos.length) { tbody.innerHTML = '骨头<td colspan="6" class="empty-state">Sin censos registrados. Importá el Excel del Google Form.骨头</tr>'; return; }
+  tbody.innerHTML = censos.map(m => { const a = activos.find(x => x.qr === m.activo); return `<tr><td>${fmtDate(m.fecha)}</td><td><span class="qr-tag">${m.activo}</span></td><td>${a ? a.modelo : '—'}</td><td><span class="qr-tag">${m.clienteId || '—'}</span></td><td>${m.cliente || '—'}</td><td>${m.chofer || '—'}</td> </tr>`; }).join('');
+}
+
+function renderAll() { renderDashboard(); renderActivos(); renderClientes(); renderMovimientos(); renderChecklist(); populateSelects(); }
+function populateSelects() { document.getElementById('f-act-id').innerHTML = activos.map(a => `<option value="${a.qr}">${a.qr} — ${a.modelo} (${a.estado})</option>`).join(''); }
+
+// ── UI HELPERS ────────────────────────────────────────────────
+function showPage(id, navEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (navEl) navEl.classList.add('active');
+  const titles = { dashboard: 'Dashboard', activos: 'Activos', clientes: 'Clientes', movimientos: 'Movimientos', checklist: 'Censos registrados', compras: 'Importar compras', 'checklist-import': 'Importar checklist' };
+  document.getElementById('page-title').textContent = titles[id] || id;
+}
+
+function openModal(id) {
+  if (document.getElementById('f-fecha')) document.getElementById('f-fecha').value = today();
+  populateSelects();
+  if (id === 'modal-mov') { clearClienteSel(); showPage('movimientos', document.querySelectorAll('.nav-item')[3]); }
+  if (id === 'modal-activo') showPage('activos', document.querySelectorAll('.nav-item')[1]);
+  const el = document.getElementById(id);
+  el.classList.add('open');
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function toggleFail() { const t = document.getElementById('f-tipo').value; document.getElementById('fail-wrap').style.display = ['Retiro', 'Servicio técnico', 'Baja'].includes(t) ? 'block' : 'none'; document.getElementById('compras-wrap').style.display = t === 'Entrega' ? 'block' : 'none'; }
+function setFilter(btn, val) { activoFilter = val; document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderActivos(); }
+function setLoading(v) { document.getElementById('spinner').style.display = v ? 'inline' : 'none'; }
+function setSyncStatus(t) { document.getElementById('sync-status').textContent = t; }
+function toast(msg, isErr) { const el = document.getElementById('toast'); el.textContent = msg; el.style.background = isErr ? '#A32D2D' : '#2C2C2A'; el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 3200); }
+
+// ── IMPORTAR CHECKLIST ────────────────────────────────────────
+function handleClDrop(e) { e.preventDefault(); const dropZone = document.getElementById('cl-drop-zone'); if (dropZone) dropZone.classList.remove('over'); const f = e.dataTransfer.files[0]; if (f) handleClFile(f); }
+
+function handleClFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'array' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const data = XLSX.utils.sheet_to_json(ws, { raw: false, defval: '' });
+      if (!data.length) { toast('El archivo parece vacío.', true); return; }
+
+      const cols = Object.keys(data[0]);
+      const findColumn = (keywords, exactMatch = false) => {
+        if (exactMatch) return cols.find(c => { const clean = c.trim().toLowerCase(); return keywords.some(k => clean === k.toLowerCase()); });
+        return cols.find(c => { const clean = c.trim().toLowerCase(); return keywords.some(k => clean.includes(k.toLowerCase())); });
+      };
+      let colFecha = findColumn(['marca temporal', 'timestamp', 'fecha', 'fecha_hora'], true);
+      if (!colFecha) colFecha = findColumn(['marca temporal', 'timestamp', 'fecha', 'fecha_hora'], false);
+      let colCliId = findColumn(['cliente_id', 'clienteid', 'id_cliente'], true);
+      if (!colCliId) colCliId = findColumn(['cliente_id', 'clienteid', 'id_cliente', 'cliente'], false);
+      let colActivo = findColumn(['activo_qr', 'activoqr', 'qr', 'codigo_heladera'], true);
+      if (!colActivo) colActivo = findColumn(['activo_qr', 'activoqr', 'qr', 'codigo_heladera', 'heladera'], false);
+      let colVendedor = findColumn(['vendedor', 'responsable', 'tecnico', 'nombre'], true);
+      if (!colVendedor) colVendedor = findColumn(['vendedor', 'responsable', 'tecnico', 'nombre'], false);
+
+      const missing = [];
+      if (!colFecha) missing.push('Marca temporal');
+      if (!colCliId) missing.push('Cliente_ID');
+      if (!colActivo) missing.push('Activo_QR');
+      if (!colVendedor) missing.push('Vendedor');
+      if (missing.length) { toast(`Columnas no encontradas:\n${missing.join(', ')}\n\nColumnas disponibles:\n${cols.slice(0, 10).join(', ')}`, true); return; }
+
+      const processedRows = [], errores = [];
+      data.forEach((row, idx) => {
+        try {
+          const fechaRaw = row[colFecha];
+          const fecha = parseFechaMejorado(fechaRaw);
+          if (!fecha) { errores.push(`Fila ${idx + 2}: fecha inválida "${fechaRaw}"`); return; }
+          const activoQr = (row[colActivo] || '').toString().trim();
+          if (!activoQr) { errores.push(`Fila ${idx + 2}: Activo_QR vacío`); return; }
+          processedRows.push({ fecha: fecha, cliId: (row[colCliId] || '').toString().trim(), activoQr: activoQr, vendedor: (row[colVendedor] || '').toString().trim() || 'No especificado', filaOriginal: idx + 2 });
+        } catch (err) { errores.push(`Fila ${idx + 2}: ${err.message}`); }
+      });
+      if (errores.length > 0) toast(`⚠️ ${errores.length} errores de parseo:\n${errores.slice(0, 3).join('\n')}`, true);
+      if (processedRows.length === 0) { toast('No se pudo procesar ninguna fila válida.', true); return; }
+
+      clRows = processedRows;
+      const activosMap = new Map(activos.map(a => [a.qr, a]));
+      const matched = clRows.filter(r => activosMap.has(r.activoQr));
+      const noMatch = clRows.filter(r => !activosMap.has(r.activoQr));
+
+      const previewBody = clRows.slice(0, 15).map(r => { const ok = activosMap.has(r.activoQr); const activo = activosMap.get(r.activoQr); const estadoClass = ok ? 'match' : 'no-match'; const estadoText = ok ? '✓ Actualizará censo' : '✗ QR no encontrado'; return `<tr><td>${fmtDate(r.fecha)}</td><td><span class="qr-tag">${escapeHtml(r.activoQr)}</span></td><td>${activo ? escapeHtml(activo.modelo) : '—'}</td><td><span class="qr-tag">${escapeHtml(r.cliId || '—')}</span></td><td>${activo ? escapeHtml(activo.cliente || '—') : '—'}</td><td>${escapeHtml(r.vendedor)}</td><td class="${estadoClass}">${estadoText}</td></tr>`; }).join('');
+      document.getElementById('cl-prev-head').innerHTML = `<tr><th>Fecha censo</th><th>Activo QR</th><th>Modelo</th><th>Cliente ID</th><th>Cliente</th><th>Vendedor</th><th>Estado</th></tr>`;
+      document.getElementById('cl-prev-body').innerHTML = previewBody;
+      document.getElementById('cl-info').innerHTML = `<strong>📋 ${file.name}</strong><br>${clRows.length} registros · ${matched.length} activos encontrados · ${noMatch.length} ignorados`;
+      const warnEl = document.getElementById('cl-warn');
+      if (noMatch.length > 0) { warnEl.style.display = 'block'; warnEl.innerHTML = `<strong>⚠️ ${noMatch.length} QR no encontrados:</strong><br>${noMatch.slice(0, 5).map(r => escapeHtml(r.activoQr)).join(', ')}${noMatch.length > 5 ? '...' : ''}<br><small>Verificá los códigos QR en el formulario.</small>`; }
+      else warnEl.style.display = 'none';
+      checklistPreviewData = { rows: matched, total: matched.length };
+      goClStep(2);
+    } catch (error) { toast('Error al leer el archivo: ' + error.message, true); }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function parseFechaMejorado(val) {
+  if (!val) return null;
+  const str = String(val).trim();
+  if (!str) return null;
+  if (/^\d{4,6}$/.test(str)) {
+    const serial = parseInt(str);
+    let daysToAdd = serial;
+    if (serial >= 60) daysToAdd = serial - 1;
+    const date = new Date(1900, 0, daysToAdd);
+    if (!isNaN(date.getTime())) return date.toISOString().split('T')[0];
+  }
+  const dateTimeMatch = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (dateTimeMatch) { const [_, d, m, y] = dateTimeMatch; return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`; }
+  const isoMatch = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (isoMatch) return str.slice(0, 10);
+  const usMatch = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (usMatch) { const [_, m, d, y] = usMatch; return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`; }
+  try { const dt = new Date(str); if (!isNaN(dt.getTime())) return dt.toISOString().split('T')[0]; } catch (e) { }
+  return null;
+}
+
+async function applyChecklist() {
+  if (!checklistPreviewData || !checklistPreviewData.rows.length) { toast('No hay censos válidos para importar.', true); return; }
+  setLoading(true);
+  let ok = 0, err = 0;
+  const erroresDetalle = [];
+  const BATCH_SIZE = 5;
+  const rows = checklistPreviewData.rows;
+  for (let i = 0; i < rows.length; i += BATCH_SIZE) {
+    const batch = rows.slice(i, i + BATCH_SIZE);
+    const promises = batch.map(async (r) => {
+      try {
+        const idx = activos.findIndex(a => a.qr === r.activoQr);
+        if (idx < 0) return { success: false, error: `QR ${r.activoQr} no encontrado` };
+        const activoActual = activos[idx];
+        const fechaCenso = r.fecha;
+        const hoy = new Date();
+        const fechaCensoDate = new Date(fechaCenso);
+        if (fechaCensoDate > hoy) return { success: false, error: `Fecha de censo futura: ${fechaCenso}` };
+        const a = { ...activoActual, ultimoCenso: fechaCenso };
+        const movRow = ['Censo', r.activoQr, r.cliId || activoActual.clienteId || '', activoActual.cliente || '', r.vendedor, fechaCenso, '', ''];
+        await api({ method: 'POST', body: { action: 'update', sheet: 'Activos', rowIndex: idx, row: activoToRow(a) } });
+        await api({ method: 'POST', body: { action: 'append', sheet: 'Movimientos', row: movRow } });
+        return { success: true, activo: r.activoQr };
+      } catch (e) { return { success: false, error: e.message, activo: r.activoQr }; }
+    });
+    const results = await Promise.all(promises);
+    for (const res of results) { if (res.success) ok++; else { err++; erroresDetalle.push(`${res.activo}: ${res.error}`); } }
+  }
+  await loadAll();
+  document.getElementById('cl-result-title').textContent = `✅ ${ok} censos registrados`;
+  if (err > 0) document.getElementById('cl-result-sub').innerHTML = `⚠️ ${err} errores:<br>${erroresDetalle.slice(0, 5).join('<br>')}${erroresDetalle.length > 5 ? '<br>...' : ''}`;
+  else document.getElementById('cl-result-sub').textContent = `Se actualizó la fecha de censo en ${ok} heladeras.`;
+  goClStep(3);
+  setLoading(false);
+  checklistPreviewData = null;
+}
+
+function goClStep(n) { for (let i = 1; i <= 3; i++) { const el = document.getElementById('cl-step' + i); if (el) el.style.display = i === n ? 'block' : 'none'; } }
+function resetCl() { clRows = []; checklistPreviewData = null; document.getElementById('cl-input').value = ''; goClStep(1); }
+
+// ── INICIALIZACIÓN ────────────────────────────────────────────
+(async () => {
+  document.getElementById('sync-label').textContent = 'Conectando...';
+  await initSheets();
+  await loadAll();
+  document.getElementById('sync-label').textContent = 'Distribuidora';
+  goStep(1);
+})();
 </script>
 </body>
 </html>
